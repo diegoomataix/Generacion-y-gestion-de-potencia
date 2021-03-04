@@ -5,8 +5,8 @@ clear all; clc; close all
 h = [450e3 500e3 600e3];        % [m]
 RT = 6378e3;                    % [m]
 omega = [0.05 0.1 0.5];         % [rad/s]
-eta = 0.3;                      % eficiencia paneles
-fo = 0.8;                       % factor de ocupación
+eta = 0.29;                      % eficiencia paneles
+fo = 0.9;                       % factor de ocupación     c.pdf ( pindado) pag 10.
 fg = (1 + sqrt(2)) / 2;         % factor geometrico
 J2 =  1.0827e-3;                % J2 tierra
 mu_T = 5.986e14;                % [m^3/s^2]
@@ -24,15 +24,17 @@ w = 0;
 T = 2*pi*sqrt(a.^3/mu_T);       % [s]
 
 %% ACTITUD DEL SATELITE
-pasoT=1000;
+pasoT=1e4;
 
-for i = 1:3
-    t(i,:) = linspace(0,T(i),pasoT);
-    alfa(i,:) = rad2deg(t(i,:)*n(i));             % [deg]
-    for j = 1:3
-        roll(i,j,:) = t(i,:) * omega(j);          % [rad]
-    end
-end
+% for i = 1:3
+%     t(i,:) = linspace(0,T(i),pasoT);
+%     alfa(i,:) = rad2deg(t(i,:)*n(i));             % [deg]
+%     for j = 1:3
+%         roll(i,j,:) = t(i,:) * omega(j);          % [rad]
+%     end
+% end
+
+[t, alfa, roll] = attitude(T, pasoT, n, omega);
 
 % Definición caras (desfase)
 
@@ -171,3 +173,15 @@ plot(alfaplot(:),PtotalPLOT(:))
 Pmedia = trapz(t(height,:),PtotalPLOT)/T(height);
 
 
+%% FUNCIONES
+
+function [t, alfa, roll] = attitude(T, pasoT, n, omega)
+
+for i = 1:3
+    t(i,:) = linspace(0,T(i),pasoT);
+    alfa(i,:) = rad2deg(t(i,:)*n(i));             % [deg]
+    for j = 1:3
+        roll(i,j,:) = t(i,:) * omega(j);          % [rad]
+    end
+end
+end
