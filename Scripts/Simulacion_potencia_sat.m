@@ -77,11 +77,11 @@ for i = 1:4                    %caras
 end
 
 % Potencia total
-P_mPa_total(:,:,:) = P_mPa(1,:,:,:)+P_mPa(2,:,:,:)+P_mPa(3,:,:,:)+P_mPa(4,:,:,:)+P_mP;
+P_mPa_total(:,:,:) = P_mPa(1,:,:,:)+P_mPa(2,:,:,:)+P_mPa(3,:,:,:)+P_mPa(4,:,:,:)+P_mP;           % [W]
 
 %Redefinición de alfa
 for i=1:3
-    alfa(i,:) = rad2deg(t(i,:)*n(i)); 
+    alfa(i,:) = rad2deg(t(i,:)*n(i));       % [deg]
 end
 
 %Potencia media total nula durante eclipse
@@ -89,7 +89,7 @@ end
 for i = 1:3
     for j = 1:pasoT
         if alfa(i,j) >= alfa_eclipse_in(i) && alfa(i,j) <= alfa_eclipse_out(i)
-           P_mPa_total(i,:,j) = 0; 
+           P_mPa_total(i,:,j) = 0;          % [W]
         end
     end
 end
@@ -97,7 +97,7 @@ end
 %% FIGURAS
 
 % Seleccionar Altura
-height = 1;
+height = 1;                         % Seleccionar ajuste altura (1-3)
 switch(height)
     case 1
         alfaplot(:) = alfa(1,:);
@@ -114,7 +114,7 @@ switch(height)
 end
         
 % Seleccionar Actitud
-act = 2;
+act = 1;                            % Seleccionar ajuste vel. rotacion (1-3)
 switch(act)
     case 1
         Pplot(:,i) = P_mPa(:,height,1,i);
@@ -127,6 +127,7 @@ switch(act)
         PtotalPLOT(:,:,i) = P_mPa_total(height,3,i);
 end
 
+% Definir variables para el plot
 for i = 1:pasoT
     Pplot(:,i) = P_mPa(:,height,act,i);
 end
