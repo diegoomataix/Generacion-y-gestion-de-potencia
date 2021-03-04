@@ -17,10 +17,10 @@ fg = (1 + sqrt(2)) / 2;         % factor geometrico
 %% PARAMETROS ORBITALES
 % Órbita SS
 a = h + RT;
-n = sqrt(mu_T./a.^3);           % [rad/s]
+n = sqrt(mu_T./a.^3);             % [rad/s]
 e = 0;
 w = 0;
-T = 2*pi*sqrt(a.^3/mu_T);       % [s]
+T = 2*pi*sqrt(a.^3/mu_T);         % [s]
 
 %% ACTITUD DEL SATELITE
 
@@ -41,9 +41,8 @@ alfa_eclipse_out = 180 + rho;           % [deg]
 %% POTENCIA
 
 % Componente Perpendicular
-P_my = G*eta*Ap*fo*fg*sind(beta)*(2/3); % [W]
+P_my = G*eta*Ap*fo*fg*sind(beta)./(4*T./3); % [W]
 
-% Componente Horizontal
-
+% Componente Perpendicular
 
 % Pi = G*eta*Ap*fo*sind(beta)*cos(THETA); % [W]
