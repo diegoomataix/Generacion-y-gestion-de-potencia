@@ -76,10 +76,11 @@ for i = 1:4                    %caras
     end
 end
 
-% Potencia total
+
 P_mPa_total(:,:,:) = P_mPa(1,:,:,:)+P_mPa(2,:,:,:)+P_mPa(3,:,:,:)+P_mPa(4,:,:,:)+P_mP;
 
 %Redefinición de alfa
+
 for i=1:3
     alfa(i,:) = rad2deg(t(i,:)*n(i)); 
 end
@@ -96,8 +97,8 @@ end
 
 %% FIGURAS
 
-% Seleccionar Altura
-height = 1;
+%Altura
+height = 3;
 switch(height)
     case 1
         alfaplot(:) = alfa(1,:);
@@ -113,8 +114,8 @@ switch(height)
         PtotalPLOT(:,:,i) = P_mPa_total(3,1,i);
 end
         
-% Seleccionar Actitud
-act = 2;
+%Actitud
+act = 1;
 switch(act)
     case 1
         Pplot(:,i) = P_mPa(:,height,1,i);
@@ -135,7 +136,7 @@ for i = 1:pasoT
     PtotalPLOT(i) = P_mPa_total(height,act,i);
 end
 
-% Todas las caras
+%Todas las caras
 
 figure()
 hold on
@@ -144,56 +145,44 @@ plot(alfaplot(:),Pplot(1,:), '-', 'Color',' #383838', 'LineWidth',1)
 plot(alfaplot(:),Pplot(2,:), 'k:','LineWidth',1)
 plot(alfaplot(:),Pplot(3,:), '-.', 'Color', '#494949','LineWidth',1)
 plot(alfaplot(:),Pplot(4,:), '--','Color','#797d7f','LineWidth',1)
-% title('Potencia eléctrica máxima generada por cada cara en función de \alpha')
+title('Potencia eléctrica máxima generada por cada cara en función de \')
 axis tight
 axis([0 360 0 10])
-xlabel('\alpha [deg]')
-ylabel('{\it P} [W]');
 legend({'Cara X+','Cara Y+','Cara X-','Cara Y-'},'Location','northeast','NumColumns',2)
-box on
+
+
 hold off
-  
-% Cara X+ X-
+% 
+% %Cara X+ X-
+% 
+% figure()
+% hold on
+% grid on
+% plot(alfaplot(:),Pplot(1,:))
+% plot(alfaplot(:),Pplot(3,:))
+% axis([0 360 0 10])
+% hold off
+% 
+% %Cara Y+ Y-
+% 
+% figure()
+% hold on
+% grid on
+% plot(alfaplot(:),Pplot(2,:))
+% plot(alfaplot(:),Pplot(4,:))
+% axis([0 360 0 10])
+% hold off
+% 
+% %Potencia total
+% 
+% figure()
+% hold on
+% grid on
+% plot(alfaplot(:),PtotalPLOT(:))
+% axis([0 360 0 20])
+% hold off
 
-figure()
-hold on
-grid on
-plot(alfaplot(:),Pplot(1,:), '-', 'Color',' #383838', 'LineWidth',1)
-plot(alfaplot(:),Pplot(3,:), '-.', 'Color', '#494949','LineWidth',1)
-axis([0 360 0 10])
-xlabel('\alpha [deg]')
-ylabel('{\it P} [W]');
-legend({'Cara X+', 'Cara X-'},'Location','northeast','NumColumns',2)
-box on
-hold off
-
-% Cara Y+ Y-
-
-figure()
-hold on
-grid on
-plot(alfaplot(:),Pplot(2,:), 'k-','LineWidth',1)
-plot(alfaplot(:),Pplot(4,:), '--','Color','#797d7f','LineWidth',1)
-axis([0 360 0 10])
-xlabel('\alpha [deg]')
-ylabel('{\it P} [W]');
-legend({'Cara Y+', 'Cara Y-'},'Location','northeast','NumColumns',2)
-box on
-hold off
- 
-% Potencia total
-
-figure()
-hold on
-grid on
-plot(alfaplot(:),PtotalPLOT(:), 'k-','LineWidth',1)
-xlabel('\alpha [deg]')
-ylabel('{\it P_T} [W]');
-axis([0 360 0 20])
-box on
-hold off
-
-% Potencia media generada por órbita
+Potencia media generada por órbita
 
 Pmedia = trapz(t(height,:),PtotalPLOT)/T(height);
 
