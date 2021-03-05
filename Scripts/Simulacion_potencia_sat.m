@@ -24,20 +24,20 @@ w = 0;
 T = 2*pi*sqrt(a.^3/mu_T);       % [s]
 
 %% ACTITUD DEL SATELITE
-pasoT=1e4;
+pasoT=1e4;                      % paso temporal
 
 [t, alfa, roll] = attitude(T, pasoT, n, omega);
 
 % Definición caras (desfase)
 
-phi = deg2rad([0 90 180 270]);   %[rad]
+phi = deg2rad([0 90 180 270]);  % [rad]
 
 %% ECLIPSES
 
-rho = asind(RT./(RT+h));                % [deg]
+rho = asind(RT./(RT+h));        % [deg]
 
-alfa_eclipse_in = 180 - rho;            % [deg]
-alfa_eclipse_out = 180 + rho;           % [deg]
+alfa_eclipse_in = 180 - rho;    % [deg]
+alfa_eclipse_out = 180 + rho;   % [deg]
 
 
 for i = 1:3
@@ -54,11 +54,10 @@ end
 P_mP = G*eta*Ap*fo*fg*sind(beta)*(2/3); % [W]
 
 % Componente Paralelo
-
-for i = 1:4                    %caras
-    for j = 1:3                %alturas
-        for k = 1:3            %actitud
-            for l = 1:pasoT    %tiempo
+for i = 1:4                     % caras
+    for j = 1:3                 % alturas
+        for k = 1:3             % actitud
+            for l = 1:pasoT     % tiempo
                 P_mPa(i,j,k,l) = G*eta*Ap*fo*cosd(beta)*cos(roll(j,k,l)+phi(i))*sind(alfa(j,l)); % [W]
                 if P_mPa(i,j,k,l)<0
                    P_mPa(i,j,k,l)=0;
@@ -77,7 +76,6 @@ for i=1:3
 end
 
 %Potencia media total nula durante eclipse
- 
 for i = 1:3
     for j = 1:pasoT
         if alfa(i,j) >= alfa_eclipse_in(i) && alfa(i,j) <= alfa_eclipse_out(i)
@@ -89,7 +87,7 @@ end
 %% FIGURAS
 
 % Seleccionar Altura
-height = 3;                         % Seleccionar ajuste altura (1-3)
+height = 1;                         % Seleccionar ajuste altura (1-3)
 switch(height)
     case 1
         alfaplot(:) = alfa(1,:);
@@ -106,7 +104,7 @@ switch(height)
 end
         
 % Seleccionar Actitud
-act = 1;                            % Seleccionar ajuste vel. rotacion (1-3)
+act = 2;                            % Seleccionar ajuste vel. rotacion (1-3)
 switch(act)
     case 1
         Pplot(:,i) = P_mPa(:,height,1,i);
@@ -146,6 +144,24 @@ legend({'Cara X+','Cara Y+','Cara X-','Cara Y-'},'Location','northeast','NumColu
 box on
 hold off
   
+%%%
+
+figure()
+hold on
+grid on
+plot(t(height,:),Pplot(1,:), '-', 'Color',' #383838', 'LineWidth',1)
+plot(t(height,:),Pplot(2,:), 'k:','LineWidth',1)
+plot(t(height,:),Pplot(3,:), '-.', 'Color', '#494949','LineWidth',1)
+plot(t(height,:),Pplot(4,:), '--','Color','#797d7f','LineWidth',1)
+% title('Potencia eléctrica máxima generada por cada cara en función del tiempo')
+axis tight
+axis([0 T(height) 0 10])
+xlabel('{\it t} [s]')
+ylabel('{\it P} [W]');
+legend({'Cara X+','Cara Y+','Cara X-','Cara Y-'},'Location','northeast','NumColumns',2)
+box on
+hold off
+
 % Cara X+ X-
 
 figure()
@@ -173,7 +189,11 @@ ylabel('{\it P} [W]');
 legend({'Cara Y+', 'Cara Y-'},'Location','northeast','NumColumns',2)
 box on
 hold off
- 
+
+% Potencia media generada por órbita
+
+Pmedia = trapz(t(height,:),PtotalPLOT)/T(height)            % [W]
+
 % Potencia total
 
 figure()
@@ -183,12 +203,11 @@ plot(alfaplot(:),PtotalPLOT(:), 'k-','LineWidth',1)
 xlabel('\alpha [deg]')
 ylabel('{\it P_T} [W]');
 axis([0 360 0 20])
+% yline(Pmedia);
 box on
 hold off
 
-% Potencia media generada por órbita
 
-Pmedia = trapz(t(height,:),PtotalPLOT)/T(height)            % [W]
 
 
 %% FUNCIONES
