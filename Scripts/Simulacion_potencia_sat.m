@@ -40,13 +40,13 @@ alfa_eclipse_in = 180 - rho;    % [deg]
 alfa_eclipse_out = 180 + rho;   % [deg]
 
 
-for i = 1:3
-    for j = 1:pasoT
-        if alfa(i,j) >= alfa_eclipse_in(i) && alfa(i,j) <= alfa_eclipse_out(i)
-           alfa(i,j) = 0; 
-        end
-    end
-end
+% for i = 1:3
+%     for j = 1:pasoT
+%         if alfa(i,j) >= alfa_eclipse_in(i) && alfa(i,j) <= alfa_eclipse_out(i)
+%            alfa(i,j) = 0; 
+%         end
+%     end
+% end
 
 %% POTENCIA
 
@@ -58,7 +58,7 @@ for i = 1:4                     % caras
     for j = 1:3                 % alturas
         for k = 1:3             % actitud
             for l = 1:pasoT     % tiempo
-                P_mPa(i,j,k,l) = G*eta*Ap*fo*cosd(beta)*cos(roll(j,k,l)+phi(i))*sind(alfa(j,l)); % [W]
+                P_mPa(i,j,k,l) = G*eta*Ap*fo*cosd(beta)*cos(roll(j,k,l)+phi(i))*sind(alfa(j,l)) + P_mP*cos(roll(j,k,l)+phi(i)-pi/2); % [W]
                 if P_mPa(i,j,k,l)<0
                    P_mPa(i,j,k,l)=0;
                 end
@@ -68,7 +68,7 @@ for i = 1:4                     % caras
 end
 
 % Potencia total
-P_mPa_total(:,:,:) = P_mPa(1,:,:,:)+P_mPa(2,:,:,:)+P_mPa(3,:,:,:)+P_mPa(4,:,:,:)+P_mP;           % [W]
+P_mPa_total(:,:,:) = P_mPa(1,:,:,:)+P_mPa(2,:,:,:)+P_mPa(3,:,:,:)+P_mPa(4,:,:,:);%+P_mP;           % [W]
 
 %Redefinición de alfa
 for i=1:3
@@ -79,6 +79,7 @@ end
 for i = 1:3
     for j = 1:pasoT
         if alfa(i,j) >= alfa_eclipse_in(i) && alfa(i,j) <= alfa_eclipse_out(i)
+           P_mPa(:,i,:,j) = 0;
            P_mPa_total(i,:,j) = 0;          % [W]
         end
     end
@@ -87,7 +88,7 @@ end
 %% FIGURAS
 
 % Seleccionar Altura
-height = 1;                         % Seleccionar ajuste altura (1-3)
+height = 2;                         % Seleccionar ajuste altura (1-3)
 switch(height)
     case 1
         alfaplot(:) = alfa(1,:);
@@ -104,7 +105,7 @@ switch(height)
 end
         
 % Seleccionar Actitud
-act = 2;                            % Seleccionar ajuste vel. rotacion (1-3)
+act = 1;                            % Seleccionar ajuste vel. rotacion (1-3)
 switch(act)
     case 1
         Pplot(:,i) = P_mPa(:,height,1,i);
@@ -137,7 +138,7 @@ plot(alfaplot(:),Pplot(3,:), '-.', 'Color', '#494949','LineWidth',1)
 plot(alfaplot(:),Pplot(4,:), '--','Color','#797d7f','LineWidth',1)
 % title('Potencia eléctrica máxima generada por cada cara en función de \alpha')
 axis tight
-axis([0 360 0 10])
+axis([0 360 0 14])
 xlabel('\alpha [deg]')
 ylabel('{\it P} [W]');
 legend({'Cara X+','Cara Y+','Cara X-','Cara Y-'},'Location','northeast','NumColumns',2)
@@ -155,7 +156,7 @@ plot(t(height,:),Pplot(3,:), '-.', 'Color', '#494949','LineWidth',1)
 plot(t(height,:),Pplot(4,:), '--','Color','#797d7f','LineWidth',1)
 % title('Potencia eléctrica máxima generada por cada cara en función del tiempo')
 axis tight
-axis([0 T(height) 0 10])
+axis([0 T(height) 0 14])
 xlabel('{\it t} [s]')
 ylabel('{\it P} [W]');
 legend({'Cara X+','Cara Y+','Cara X-','Cara Y-'},'Location','northeast','NumColumns',2)
@@ -169,7 +170,7 @@ hold on
 grid on
 plot(alfaplot(:),Pplot(1,:), '-', 'Color',' #383838', 'LineWidth',1)
 plot(alfaplot(:),Pplot(3,:), '-.', 'Color', '#494949','LineWidth',1)
-axis([0 360 0 10])
+axis([0 360 0 14])
 xlabel('\alpha [deg]')
 ylabel('{\it P} [W]');
 legend({'Cara X+', 'Cara X-'},'Location','northeast','NumColumns',2)
@@ -183,7 +184,7 @@ hold on
 grid on
 plot(alfaplot(:),Pplot(2,:), 'k-','LineWidth',1)
 plot(alfaplot(:),Pplot(4,:), '--','Color','#797d7f','LineWidth',1)
-axis([0 360 0 10])
+axis([0 360 0 14])
 xlabel('\alpha [deg]')
 ylabel('{\it P} [W]');
 legend({'Cara Y+', 'Cara Y-'},'Location','northeast','NumColumns',2)
@@ -221,4 +222,5 @@ for i = 1:3
         roll(i,j,:) = t(i,:) * omega(j);          % [rad]
     end
 end
+
 end
