@@ -198,7 +198,7 @@ hold off
 %Duración del eclipse
 alfa_ecl_in
 alfa_ecl_out
-t_ecl = deg2rad(alfa_ecl_out - alfa_ecl_in)/n_ecl  %[s]
+t_ecl = (deg2rad(alfa_ecl_out - alfa_ecl_in)/n_ecl)*sind(90 - beta)  %[s]
 
 
 % Potencia media generada por órbita
