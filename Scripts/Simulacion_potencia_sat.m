@@ -154,6 +154,7 @@ xlabel('\alpha [deg]')
 ylabel('{\it P} [W]');
 legend({'Cara X+','Cara Y+','Cara X-','Cara Y-'},'Location','northeast','NumColumns',2)
 box on
+set(gca,'FontSize',18)
 hold off
   
 % % Todas las caras vs t
@@ -186,6 +187,7 @@ xlabel('\alpha [deg]')
 ylabel('{\it P} [W]');
 legend({'Cara X+', 'Cara X-'},'Location','northeast','NumColumns',2)
 box on
+set(gca,'FontSize',18)
 hold off
 
 % Cara Y+ Y-
@@ -200,6 +202,7 @@ xlabel('\alpha [deg]')
 ylabel('{\it P} [W]');
 legend({'Cara Y+', 'Cara Y-'},'Location','northeast','NumColumns',2)
 box on
+set(gca,'FontSize',18)
 hold off
 
 
@@ -225,6 +228,7 @@ ylabel('{\it P_T} [W]');
 axis([0 360 0 20])
 % yline(Pmedia);
 box on
+set(gca,'FontSize',18)
 hold off
 
 
