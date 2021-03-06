@@ -82,7 +82,7 @@ end
 %% FIGURAS
 
 % Seleccionar Altura
-height = 2;                         % Seleccionar ajuste altura (1-3)
+height = 1;                         % Seleccionar ajuste altura (1-3)
 switch(height)
     case 1
         alfa_ecl_in(:) = alfa_eclipse_in(1);
@@ -196,6 +196,7 @@ hold off
 
 
 %Duración del eclipse
+
 alfa_ecl_in
 alfa_ecl_out
 t_ecl = (deg2rad(alfa_ecl_out - alfa_ecl_in)/n_ecl)*sind(90 - beta)  %[s]
