@@ -47,7 +47,7 @@ alfa_eclipse_out = 180 + phi;           % [deg]
 
 % Método Analítico
 P_mH = G*eta*Ap*fo*fg*sind(beta)*(2/3);                                            % [W]   % perpendicular a la órbita
-P_mP = G*eta*Ap*fo*fg*cosd(beta)*(2) .* 1./n .* (-cos((2.*T.*n)/3)+1) .* (1./T);   % [W]   % paralelo a la órbita
+P_mP = G*eta*Ap*fo*fg*cosd(beta)*(2) .* 1./n .* (-cos((T.*n)/3)+1) .* (1./T);   % [W]   % paralelo a la órbita
 %P_mP = G*eta*Ap*fo*fg*cosd(beta)*(2/3) * 1/n(1) * (-cos((2*T(1)*n(1))/3)+1);
 P_m = P_mH + P_mP;                          % [W]
 
