@@ -10,7 +10,7 @@ fo = 0.9;                       % factor de ocupación     {ref}
 fg = (1 + sqrt(2)) / 2;         % factor geometrico
 J2 =  1.0827e-3;                % J2 tierra
 mu_T = 5.986e14;                % [m^3/s^2]
-beta = 45;                      % Ángulo incidencia solar [deg]
+beta = 30;                      % Ángulo incidencia solar [deg]
 G = 1360;                       % [W/m2]
 Ap = 0.1*0.3;                   % [m^2]
 
@@ -32,22 +32,21 @@ pasoT=1e4;                      % paso temporal
 
 % Definición caras (desfase)
 
-phi_caras = deg2rad([0 90 180 270]);    % [rad]
+phi = deg2rad([0 90 180 270]);  % [rad]
 
 %% ECLIPSES
 
-rho = asind(RT./(RT+h));                % [deg]
+rho = asind(RT./(RT+h));        % [deg]
 
-phi = acosd(cosd(rho)/cosd(beta));      % [deg] % phi/2
+alfa_eclipse_in  = 180 - rho;   % [deg]
+alfa_eclipse_out = 180 + rho;   % [deg]
 
-alfa_eclipse_in  = 180 - phi;           % [deg]
-alfa_eclipse_out = 180 + phi;           % [deg]
 
 %% POTENCIA
 
 % Método Analítico
-P_mH = G*eta*Ap*fo*fg*sind(beta)*(2/3);                                            % [W]   % perpendicular a la órbita
-P_mP = G*eta*Ap*fo*fg*cosd(beta)*(2) .* 1./n .* (-cos((2.*T.*n)/3)+1) .* (1./T);   % [W]   % paralelo a la órbita
+P_mH = G*eta*Ap*fo*fg*sind(beta)*(2/3);                               % [W]   % perpendicular a la órbita
+P_mP = G*eta*Ap*fo*fg*cosd(beta)*(2/3) .* 1./n .* (-cos((2.*T.*n)/3)+1) .* (1./T);   % [W] % paralelo a la órbita
 %P_mP = G*eta*Ap*fo*fg*cosd(beta)*(2/3) * 1/n(1) * (-cos((2*T(1)*n(1))/3)+1);
 P_m = P_mH + P_mP;                          % [W]
 
@@ -57,7 +56,7 @@ for i = 1:4                     % caras
         for k = 1:3             % actitud
             for l = 1:pasoT     % tiempo
                 %P_mPa(i,j,k,l) = G*eta*Ap*fo*cosd(beta)*cos(roll(j,k,l)+phi(i))*sind(alfa(j,l)) + P_mP*cos(roll(j,k,l)+phi(i)-pi/2); % [W]
-                P_mPa(i,j,k,l) = G*eta*Ap*fo*cosd(beta)*cos(roll(j,k,l)+phi_caras(i))*sind(alfa(j,l)) +  G*eta*Ap*fo*sind(beta)*cos(roll(j,k,l)+phi_caras(i)-pi/2) ; % [W]
+                P_mPa(i,j,k,l) = G*eta*Ap*fo*cosd(beta)*cos(roll(j,k,l)+phi(i))*sind(alfa(j,l)) +  G*eta*Ap*fo*sind(beta)*cos(roll(j,k,l)+phi(i)-pi/2) ; % [W]
                 if P_mPa(i,j,k,l)<0
                    P_mPa(i,j,k,l)=0;
                 end
@@ -70,7 +69,7 @@ end
 P_mPa_total(:,:,:) = P_mPa(1,:,:,:)+P_mPa(2,:,:,:)+P_mPa(3,:,:,:)+P_mPa(4,:,:,:);  %[W]
 
 % Diferencia métodos
-%diff = P_mPa - P_m
+diff = P_mPa - P
 
 %Redefinición de alfa
 for i=1:3
@@ -156,23 +155,23 @@ legend({'Cara X+','Cara Y+','Cara X-','Cara Y-'},'Location','northeast','NumColu
 box on
 hold off
   
-% % Todas las caras vs t
-% 
-% figure()
-% hold on
-% grid on
-% plot(t(height,:),Pplot(1,:), '-', 'Color',' #383838', 'LineWidth',1)
-% plot(t(height,:),Pplot(2,:), 'k:','LineWidth',1)
-% plot(t(height,:),Pplot(3,:), '-.', 'Color', '#494949','LineWidth',1)
-% plot(t(height,:),Pplot(4,:), '--','Color','#797d7f','LineWidth',1)
-% % title('Potencia eléctrica máxima generada por cada cara en función del tiempo')
-% axis tight
-% axis([0 T(height) 0 14])
-% xlabel('{\it t} [s]')
-% ylabel('{\it P} [W]');
-% legend({'Cara X+','Cara Y+','Cara X-','Cara Y-'},'Location','northeast','NumColumns',2)
-% box on
-% hold off
+% Todas las caras vs t
+
+figure()
+hold on
+grid on
+plot(t(height,:),Pplot(1,:), '-', 'Color',' #383838', 'LineWidth',1)
+plot(t(height,:),Pplot(2,:), 'k:','LineWidth',1)
+plot(t(height,:),Pplot(3,:), '-.', 'Color', '#494949','LineWidth',1)
+plot(t(height,:),Pplot(4,:), '--','Color','#797d7f','LineWidth',1)
+% title('Potencia eléctrica máxima generada por cada cara en función del tiempo')
+axis tight
+axis([0 T(height) 0 14])
+xlabel('{\it t} [s]')
+ylabel('{\it P} [W]');
+legend({'Cara X+','Cara Y+','Cara X-','Cara Y-'},'Location','northeast','NumColumns',2)
+box on
+hold off
 
 % Cara X+ X-
 
@@ -212,7 +211,7 @@ t_ecl = (deg2rad(alfa_ecl_out - alfa_ecl_in)/n_ecl)*sind(90 - beta)  %[s]
 
 % Potencia media generada por órbita
 
-Pmedia = trapz(t(height,:),PtotalPLOT)/T(height)                     % [W]
+Pmedia = trapz(t(height,:),PtotalPLOT)/T(height)            % [W]
 
 % Potencia total
 
