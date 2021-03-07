@@ -1,2 +1,2 @@
-# Trabajo-1
+# Generación y Gestión de potencia eléctrica de un satélite. Trabajos
  
