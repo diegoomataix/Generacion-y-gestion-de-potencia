@@ -1,0 +1,12 @@
+CESI
+
+	Thin Triple-JunctionSolar Cellfor Space Applications(CTJ30 –Thin) 
+		--> datasheet : https://www.cesi.it/app/uploads/2020/03/Datasheet-CTJ30-Thin.pdf
+
+SPECTROLAB
+	NeXt Triple Junction (XTJ)
+		--> datasheet : https://satsearch.s3.eu-central-1.amazonaws.com/datasheets/satsearch_ckdyzu_spectrolab_next_xtj.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJLB7IRZ54RAMS36Q%2F20210309%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20210309T130405Z&X-Amz-Expires=600&X-Amz-Signature=f4059d198fe4d392544586e00a42bbd195fa2615b0763065ad48b445a27c1ec4&X-Amz-SignedHeaders=host
+
+San'an
+	Triple junction space solar cellS-G3TJ48A
+		--> datasheet : https://satsearch.s3.eu-central-1.amazonaws.com/datasheets/satsearch_xmn8s5_sanan_s_g3tj48a.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJLB7IRZ54RAMS36Q%2F20210309%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20210309T130407Z&X-Amz-Expires=600&X-Amz-Signature=d565d6980316ce4342ae7861c3bc0d08689ed2a707f9861399a13ab32f146340&X-Amz-SignedHeaders=host
