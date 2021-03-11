@@ -33,7 +33,6 @@ end
 % I / I_sc = ( 1 - ( V / V_oc ) ^k ) / ( 1 + h * ( V / V_oc ) )
 k = zeros(1,size(dat,2));           % matriz de 1x(n de datos) para el coeficiente k del modelo de Das
 h = zeros(1,size(dat,2));           % matriz de 1x(n de datos) para el coeficiente h del modelo de Das
-k_func = zeros(1,size(dat,2));
 
 % Determine coefficients
 for i = 1:size(dat,2)               % iterar para cada uno de los paneles
@@ -48,24 +47,19 @@ end
 % i = 1 - (1- gamma_k)* v - gamma_k * v^m         
 % i y v son la intensidad y el voltaje en forma adimensional.  
 gamma_k = zeros(1,size(dat,2));           % matriz de 1x(n de datos) para el coeficiente k del modelo de Das
-gamma_simp_k = zeros(1,size(dat,2)); 
-m = zeros(1,size(dat,2)); 
-m_simp = zeros(1,size(dat,2)); 
-m_func = zeros(1,size(dat,2)); 
-C = zeros(1,size(dat,2)); 
+m = zeros(1,size(dat,2));               % matriz de 1x(n de datos) para el coeficiente h del modelo de Das
 
 % Determine coefficients
-for i = 1:size(dat,2)   
+for i = 1:size(dat,1)   
     
-    C(i) = (1- dat(5,i) - dat(6,i))/ ((2*dat(5,i))-1);
+    C(i) = (1- dat(5,i) - dat(6,i))/ (2*dat(5,i)
     
-    m_func(i) = lambertw(-1, ((dat(6,i)* (C(i)^-1) * log(dat(6,i)))/C(i)));   %
+    m_func(i) = lambertw(-1, ((dat(6,i)* (C(i)^-1) * log(dat(6,i)))/C(i));   %
     m(i)= (m_func(i)/log(dat(6,i))) + (C(i)^-1) + 1 ; % iterar para cada uno de los paneles
     
-    gamma_k(i) = (2*dat(5,i) -1)/ ((dat(6,i)^m(i) *(m(i)-1)));    
-    gamma_simp_k(i) = 1 + (1-dat(5,i))/dat(6,i);
-    m_simp (i) = (log(1-dat(5,i))/log(dat(6,i)));
-                       
+    gamma_k(i) = (2*dat(5,i) -1)/ ((dat(6,i)^m(i) *(m(i)-1));    
+
+                        % W_func(
 end
 
 
