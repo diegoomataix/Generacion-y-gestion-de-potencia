@@ -65,7 +65,7 @@ hold on
 grid on
 box on
 % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
-plot(I_das(i,:), V(i,:))
+plot(  V(i,:) , I_das(i,:))
 
 figure(i+size(dat,2))
 hold on
@@ -82,7 +82,7 @@ end
 % i = 1 - (1- gamma)* v - gamma * v^m         
 % i y v son la intensidad y el voltaje en forma adimensional.  
 gamma = zeros(1,size(dat,2));           % matriz de 1x(n de datos) para el coeficiente k del modelo de Das
-gamma_simp_k = zeros(1,size(dat,2)); 
+gamma_simp = zeros(1,size(dat,2)); 
 m = zeros(1,size(dat,2)); 
 m_simp = zeros(1,size(dat,2)); 
 m_func = zeros(1,size(dat,2)); 
@@ -97,34 +97,52 @@ for i = 1:size(dat,2)
     m(i)= (m_func(i)/log(dat(6,i))) + (C(i)^-1) + 1 ; % iterar para cada uno de los paneles
     
     gamma(i) = (2*dat(5,i) -1)/ ((dat(6,i)^m(i) *(m(i)-1)));    
-    gamma_simp_k(i) = 1 + (1-dat(5,i))/dat(6,i);
+    gamma_simp(i) = 1 + (1-dat(5,i))/dat(6,i);
     m_simp (i) = (log(1-dat(5,i))/log(dat(6,i)));
                        
 end
 
 
 I_Kar = zeros(size(dat,2),size(V,2));
+I_Kar_simp = zeros(size(dat,2),size(V,2));
 for i = 1:size(dat,2)
     for j = 1: size(V,2)
 I_Kar(i,j) = dat(1,i) * ( 1 - (1- gamma(i))*(V(i,j)/dat(4,i)) - gamma(i)* ( (V(i,j)/dat(4,i))^m(i) ));
+I_Kar_simp(i,j) = dat(1,i) * ( 1 - (1- gamma_simp(i))*(V(i,j)/dat(4,i)) - gamma_simp(i)* ( (V(i,j)/dat(4,i))^m_simp(i) ));
     end 
 end 
 
 
 for i = 1: size(dat,2)
-figure(i)
+figure()
 hold on
 grid on
 box on
 % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
-plot(I_Kar(i,:), V(i,:))
+plot( V(i,:) , I_Kar(i,:))
 
-figure(i+size(dat,2))
+figure()
 hold on
 grid on
 box on
 % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
 plot( V(i,:), I_Kar(i,:) .* V(i,:))
+
+
+figure()
+hold on
+grid on
+box on
+% axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
+plot( V(i,:) , I_Kar_simp(i,:))
+
+
+figure()
+hold on
+grid on
+box on
+% axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
+plot( V(i,:), I_Kar_simp(i,:) .* V(i,:))
 
 end 
 
