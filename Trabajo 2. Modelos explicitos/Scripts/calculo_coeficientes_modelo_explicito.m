@@ -146,6 +146,46 @@ plot( V(i,:), I_Kar_simp(i,:) .* V(i,:))
 
 end 
 
+
+%% Pindado & Cubas's model
+% Ajuste mediante un unico parametros eta
+% I = Isc(1 -(1 - Imp/Isc)(V/Vmp)^(Imp/(Isc - Imp)))  para V<Vmp
+% I = Imp*(Vmp/V)*(1 - ((V - Vmp)/(Voc - Vmp))^eta)   para V>Vmp
+ 
+eta = zeros(1,size(dat,2));
+Datos_paneles
+
+for i=1:size(dat,2)
+    eta(i)  = (dat(1,i)/dat(2,i))*(dat(1,i)/(dat(1,i) - dat(2,i)))*((dat(4,i) - dat(3,i))/dat(4,i));
+    if i == 1 
+        a = RTC(19,1);
+        b = RTC(19,2);
+    elseif i == 2
+        a = TNJ(48,1);
+        b = TNJ(48,2);
+    elseif i == 3
+        a = ZTJ(60,1);
+        b = ZTJ(60,2);
+    elseif i == 4
+        a = G30C(940,1);
+        b = G30C(940,2);
+    elseif i == 5
+        a = PWP(20,1);
+        b = PWP(20,2);
+    elseif i == 6
+        a = KC2(70,1);
+        b = KC2(70,2);
+    elseif i == 7
+        a = SPV(1130,1);
+        b = SPV(1130,2);
+    elseif i == 8
+        a = PSC(17,1);
+        b = PSC(17,2);
+    end      
+    eta_ba(i) = (log(dat(2,i)*dat(3,i)-a*b) - log(dat(2,i)*dat(3,i)))/(log(a - dat(3,i)) - log(dat(4,i) - dat(3,i)));
+end
+
+
 %____
 
 % V = linspace(0,30,8)                                                    % V [V]
