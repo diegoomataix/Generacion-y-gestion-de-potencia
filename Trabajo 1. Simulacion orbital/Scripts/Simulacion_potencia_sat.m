@@ -14,7 +14,6 @@ beta = 45;                      % Ángulo incidencia solar [deg]
 G = 1360;                       % [W/m2]
 Ap = 0.1*0.3;                   % [m^2]
 
-
 %% PARAMETROS ORBITALES
 
 % Órbita SS
@@ -114,7 +113,7 @@ switch(height)
         Pplot(:,i) = P_mPa(:,3,1,i);
         PtotalPLOT(:,:,i) = P_mPa_total(3,1,i);
 end
-        
+
 % Seleccionar Actitud
 act = 1;                            % Seleccionar ajuste vel. rotacion (1-3)
 switch(act)
@@ -156,9 +155,9 @@ legend({'Cara X+','Cara Y+','Cara X-','Cara Y-'},'Location','northeast','NumColu
 box on
 set(gca,'FontSize',18)
 hold off
-  
+
 % % Todas las caras vs t
-% 
+%
 % figure()
 % hold on
 % grid on
