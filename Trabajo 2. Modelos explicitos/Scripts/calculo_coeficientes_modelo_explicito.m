@@ -4,10 +4,10 @@
 clear all; clc
 %% Escoger apartado
 choose = 1;
-
+%____________________________________________________________________________________
 %% Puntos caracteristicos
 % Orden de los datos de la matriz A:
-% [ Isc, Imp, Vmp, Voc, betha, alpha, k ]
+% [ Isc, Imp, Vmp, Voc, betha, alpha, k ]   (cada uno es una fila de la matriz dat)
 
 switch(choose)
     case 1  % Apartado 1
@@ -24,21 +24,69 @@ switch(choose)
         dat = ones(7); % tenemos que sacar los puntos críticos
 end
 
-%% Da's model
-% hay una función: lambertw, q nos viene dpm
-k_das = zeros(1,size(dat,2));
-h = zeros(1,size(dat,2));
+% About lambertw:
+%  For real x where −e^−1 < x < 0, the equation has exactly two real solutions. The larger
+%  solution is represented by y = lambertW(x) and the smaller solution by y = lambertW(–1,x).
 
-for i = 1:size(dat,1)
-    k_das(i)=lambertw(-1,dat(2,i)/dat(1,i)*log(dat(3,i)/dat(4,i)))/log(dat(3,i)/dat(4,i));
-    h(i) = (dat(4,i)/dat(3,i))*(dat(1,i)/dat(2,i)-1/k_das(i)-1);
+%____________________________________________________________________________________
+%% Das model
+% I / I_sc = ( 1 - ( V / V_oc ) ^k ) / ( 1 + h * ( V / V_oc ) )
+k = zeros(1,size(dat,2));           % matriz de 1x(n de datos) para el coeficiente k del modelo de Das
+h = zeros(1,size(dat,2));           % matriz de 1x(n de datos) para el coeficiente h del modelo de Das
+
+% Determine coefficients
+for i = 1:size(dat,2)               % iterar para cada uno de los paneles
+    h(i) = (dat(4,i)/dat(3,i)) * (dat(1,i)/dat(2,i) - (1/k(i)) - 1);    % Voc / Vmp * (Isc/Imp) - 1/k -1)
+
+    k_func(:,i) = lambertw(-1,dat(2,i)/dat(1,i)*log(dat(3,i)/dat(4,i)));
+    k(i)=k_func(:,i) / log(dat(3,i)/dat(4,i) );                         % W_func( Imp / Isc * log(Vmp/Voc) ) / log(Vmp/Voc)
+end
+%____________________________________________________________________________________
+%% Karmalkar & Hannefa's model
+% I / I_sc = 1 - ( 1 - gamma) * ( V / V_oc ) ) - gamma * ( V / V_oc )^m )
+gamma = zeros(1,size(dat,2));           % matriz de 1x(n de datos) para el coeficiente k del modelo de Das
+m = zeros(1,size(dat,2));               % matriz de 1x(n de datos) para el coeficiente h del modelo de Das
+
+% Determine coefficients
+for i = 1:size(dat,1)                   % iterar para cada uno de los paneles
+    gamma(i) =     
+
+    m_func(:,i) = lambertw( );
+    m(i)=k_func(:,i) / ;                         % W_func(
 end
 
-%% Karmalkar & Haneefa’s model
 
 
+
+%____
+
+% V = linspace(0,30,8)                                                    % V [V]
+
+% Current
+% I(:) = dat(1,:) .* ( ( 1 - ( V ./ dat(4,:) ) .^k ) ./ ( 1 + h .* ( V ./ dat(4,:) ) ) )
+
+% for i = length(V)
+%     I(:) = dat(1,:) * ( ( 1 - ( V(i) / dat(4,:) ) ^k(:) ) / ( 1 + h(:) * ( V(i) / dat(4,:) ) ) )
+% end
+%______________________________________________________________________________________
 %% PLOTS
+%%% Lambert W function %%%
+% figure()
+% syms x
+% fplot(lambertw(x))
+% hold on
+% fplot(lambertw(-1,x))
+% hold off
+% axis([-0.5 4 -4 2])
+% title('Lambert W function, two main branches')
+% legend('k=0','k=1','Location','best')
+%
+% figure()
+% syms x y
+% f = lambertw(x + 1i*y);
+% interval = [-100 100 -100 100];
+% fmesh(real(f),interval,'ShowContours','On')
 
-% Da's model
+%%% Da's model %%%
 
-% Karmalkar & Haneefa’s model
+%%% Karmalkar & Haneefa’s model %%%
