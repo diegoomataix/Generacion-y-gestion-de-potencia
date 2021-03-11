@@ -100,8 +100,7 @@ switch(model)
 %             grid on
 %             box on
 %             % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
-%             plot( V(i,:), I_das(i,:) .* V(i,:))
-            
+%             plot( V(i,:), I_das(i,:) .* V(i,:))     
         end
         %____________________________________________________________________________________
         %% Karmalkar & Hannefa's model
@@ -215,7 +214,6 @@ switch(model)
 %             plot( V(i,:), I_Kar_simp(i,:) .* V(i,:))
             
         end
-        
         
         %% Pindado & Cubas's model
     case 3
