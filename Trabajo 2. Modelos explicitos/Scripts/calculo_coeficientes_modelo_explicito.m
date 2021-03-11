@@ -242,43 +242,6 @@ switch(model)
             box on
             set(gca,'FontSize',18)
             hold off
-
-            %%%% MODELO SIMPLIFICADO %%%%
-%             % Plot I-V (modelo simplificado)
-%             figure()
-%             hold on
-%             grid on
-%             box on
-%             % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
-%             plot( V(i,:) , I_Kar_simp(i,:))
-%                         switch(i)
-%                 case 1
-%                     plot(RTC(:,1), RTC(:,2))
-%                 case 2
-%                     plot(TNJ(:,1), TNJ(:,2))
-%                 case 3
-%                     plot(ZTJ(:,1), ZTJ(:,2))
-%                 case 4
-%                     plot(G30C(:,1), G30C(:,2))
-%                 case 5
-%                     plot(PWP(:,1), PWP(:,2))
-%                 case 6
-%                     plot(KC2(:,1), KC2(:,2))
-%                 case 7
-%                     plot(SPV(:,1), SPV(:,2))
-%                 case 8
-%                     plot(PSC(:,1), PSC(:,2))
-%                         end
-%             hold off
-%
-%             % Plot P-V (modelo simplificado)
-%             figure()
-%             hold on
-%             grid on
-%             box on
-%             % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
-%             plot( V(i,:), I_Kar_simp(i,:) .* V(i,:))
-
         end
 
         %% Pindado & Cubas's model
