@@ -6,7 +6,7 @@ Datos_paneles
 
 %% Escoger apartado
 choose = 1;         % 1: Apartado 1      2: Apartado 2
-model = 1;          % 1: Da's model      2: Karmalkar & Hannefa's model      3: Pindado & Cubas's model
+model = 3;          % 1: Da's model      2: Karmalkar & Hannefa's model      3: Pindado & Cubas's model
 %____________________________________________________________________________________
 %% Puntos caracteristicos
 % Orden de los datos de la matriz A:
@@ -146,34 +146,69 @@ switch(model)
             grid on
             box on
             % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
-            plot( V(i,:) , I_Kar(i,:))
+            plot( V(i,:) , I_Kar(i,:), '--k','LineWidth',1)
+            plot( V(i,:) , I_Kar_simp(i,:), '-k','LineWidth',1)
             switch(i)
                 case 1
-                    plot(RTC(:,1), RTC(:,2))
+                    plot(RTC(:,1), RTC(:,2), ':k','LineWidth',2)
                 case 2
-                    plot(TNJ(:,1), TNJ(:,2))
+                    plot(TNJ(:,1), TNJ(:,2), ':k','LineWidth',2)
                 case 3
-                    plot(ZTJ(:,1), ZTJ(:,2))
+                    plot(ZTJ(:,1), ZTJ(:,2), ':k','LineWidth',2)
                 case 4
-                    plot(G30C(:,1), G30C(:,2))
+                    plot(G30C(:,1), G30C(:,2), ':k','LineWidth',2)
                 case 5
-                    plot(PWP(:,1), PWP(:,2))
+                    plot(PWP(:,1), PWP(:,2), ':k','LineWidth',2)
                 case 6
-                    plot(KC2(:,1), KC2(:,2))
+                    plot(KC2(:,1), KC2(:,2), ':k','LineWidth',2)
                 case 7
-                    plot(SPV(:,1), SPV(:,2))
+                    plot(SPV(:,1), SPV(:,2), ':k','LineWidth',2)
                 case 8
-                    plot(PSC(:,1), PSC(:,2))
+                    plot(PSC(:,1), PSC(:,2), ':k','LineWidth',2)
             end
+            axis tight
+            axis([0 dat(4,i)*1.1 0 dat(1,i)*1.1])
+            xlabel('{\it V} [V]')
+            ylabel('{\it I} [A]');
+            legend({'Modelo completo','Modelo simplificado','Resultados experimentales'},'Location','northeast','NumColumns',2)
+            box on
+            set(gca,'FontSize',18)
             hold off
 
-            % Plot P-V
-%             figure()
-%             hold on
-%             grid on
-%             box on
-%             % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
-%             plot( V(i,:), I_Kar(i,:) .* V(i,:))
+%           Plot P-V
+            figure()
+            hold on
+            grid on
+            box on
+            % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
+            plot( V(i,:), I_Kar(i,:) .* V(i,:), '-k','LineWidth',1)
+            plot( V(i,:), I_Kar_simp(i,:) .* V(i,:),'--k','LineWidth',1)
+            switch(i)
+                case 1
+                    plot(RTC(:,1), RTC(:,1).* RTC(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
+                case 2
+                    plot(TNJ(:,1), TNJ(:,1) .* TNJ(:,2), ':k','LineWidth',2)
+                case 3
+                    plot(ZTJ(:,1), ZTJ(:,1) .* ZTJ(:,2), ':k','LineWidth',2)
+                case 4
+                    plot(G30C(:,1), G30C(:,1) .* G30C(:,2), ':k','LineWidth',2)
+                case 5
+                    plot(PWP(:,1), PWP(:,1).* PWP(:,2), ':k','LineWidth',2)
+                case 6
+                    plot(KC2(:,1), KC2(:,1).* KC2(:,2), ':k','LineWidth',2)
+                case 7
+                    plot(SPV(:,1), SPV(:,1) .* SPV(:,2), ':k','LineWidth',2)
+                case 8
+                    plot(PSC(:,1), PSC(:,1) .* PSC(:,2), ':k','LineWidth',2)
+            end
+            axis tight
+            %axis([0 dat(4,i)*1.1 0 dat(1,i)*1.1])
+            xlabel('{\it V} [V]')
+            ylabel('{\it P} [W]');
+            legend({'Modelo completo','Modelo simplificado','Resultados experimentales'},'Location','northeast','NumColumns',2)
+            box on
+            set(gca,'FontSize',18)
+            hold off
 
             %%%% MODELO SIMPLIFICADO %%%%
 %             % Plot I-V (modelo simplificado)
@@ -251,6 +286,96 @@ switch(model)
             eta_ba(i) = (log(dat(2,i)*dat(3,i)-a*b) - log(dat(2,i)*dat(3,i)))/(log(a - dat(3,i)) - log(dat(4,i) - dat(3,i)));
         end
 
+        %%% V y I %%%
+        I_das = zeros(size(dat,2),size(V,2));
+        for i = 1:size(dat,2)
+            for j = 1: size(V,2)
+                if V(i,j) < dat(3,i)
+                    I_PC(i,j) = dat(1,i) * ( ( 1 - ( 1 - (dat(2,i) / dat(1,i) ) ) * (V(i,j)/dat(3,i))^((dat(2,i)/(dat(1,i) - dat(2,i))))));
+                    I_PC_simp(i,j) = I_PC(i,j); % I = Isc(1 -(1 - Imp/Isc)(V/Vmp)^(Imp/(Isc - Imp)))  para V<Vmp
+                    
+                else
+                    
+                    I_PC(i,j) = dat(2,i) * (dat(3,i)/V(i,j)) * (1 - (( V(i,j) - dat(3,i)) / (dat(4,i) - dat(3,i) ))^eta_ba(i) );
+                    I_PC_simp(i,j) = dat(2,i) * (dat(3,i)/V(i,j)) * (1 - (( V(i,j) - dat(3,i)) / (dat(4,i) - dat(3,i) ))^eta(i) );
+                    % I = Imp*(Vmp/V)*(1 - ((V - Vmp)/(Voc - Vmp))^eta)   para V>Vmp
+                end
+            end
+        end
+
+        %%% PLOT %%%
+        for i = 1: size(dat,2)
+            %%%% MODELO COMPLETO %%%%
+            % Plot I-V
+            figure()
+            hold on
+            grid on
+            box on
+            % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
+            plot( V(i,:) , I_PC(i,:), '--k','LineWidth',1)
+            plot( V(i,:) , I_PC_simp(i,:), '-k','LineWidth',1)
+            switch(i)
+                case 1
+                    plot(RTC(:,1), RTC(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
+                case 2
+                    plot(TNJ(:,1), TNJ(:,2), ':k','LineWidth',2)
+                case 3
+                    plot(ZTJ(:,1), ZTJ(:,2), ':k','LineWidth',2)
+                case 4
+                    plot(G30C(:,1), G30C(:,2), ':k','LineWidth',2)
+                case 5
+                    plot(PWP(:,1), PWP(:,2), ':k','LineWidth',2)
+                case 6
+                    plot(KC2(:,1), KC2(:,2), ':k','LineWidth',2)
+                case 7
+                    plot(SPV(:,1), SPV(:,2), ':k','LineWidth',2)
+                case 8
+                    plot(PSC(:,1), PSC(:,2), ':k','LineWidth',2)
+            end
+            axis tight
+            axis([0 dat(4,i)*1.1 0 dat(1,i)*1.1])
+            xlabel('{\it V} [V]')
+            ylabel('{\it I} [A]');
+            legend({'Modelo completo','Modelo simplificado','Resultados experimentales'},'Location','northeast','NumColumns',2)
+            box on
+            set(gca,'FontSize',18)
+            hold off
+
+            %Plot P-V
+            figure()
+            hold on
+            grid on
+            box on
+            % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
+            plot( V(i,:), I_PC(i,:) .* V(i,:), '-k','LineWidth',2)
+            plot( V(i,:), I_PC_simp(i,:) .* V(i,:), '--k','LineWidth',2)
+            switch(i)
+                case 1
+                    plot(RTC(:,1), RTC(:,1).* RTC(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
+                case 2
+                    plot(TNJ(:,1), TNJ(:,1) .* TNJ(:,2), ':k','LineWidth',2)
+                case 3
+                    plot(ZTJ(:,1), ZTJ(:,1) .* ZTJ(:,2), ':k','LineWidth',2)
+                case 4
+                    plot(G30C(:,1), G30C(:,1) .* G30C(:,2), ':k','LineWidth',2)
+                case 5
+                    plot(PWP(:,1), PWP(:,1).* PWP(:,2), ':k','LineWidth',2)
+                case 6
+                    plot(KC2(:,1), KC2(:,1).* KC2(:,2), ':k','LineWidth',2)
+                case 7
+                    plot(SPV(:,1), SPV(:,1) .* SPV(:,2), ':k','LineWidth',2)
+                case 8
+                    plot(PSC(:,1), PSC(:,1) .* PSC(:,2), ':k','LineWidth',2)
+            end
+            axis tight
+            %axis([0 dat(4,i)*1.1 0 dat(1,i)*1.1])
+            xlabel('{\it V} [V]')
+            ylabel('{\it P} [W]');
+            legend({'Modelo completo','Modelo simplificado','Resultados experimentales'},'Location','northeast','NumColumns',2)
+            box on
+            set(gca,'FontSize',18)
+            hold off
+        end
         %______________________________________________________________________________________
         %% PLOTS
         %%% Lambert W function %%%
