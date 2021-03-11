@@ -5,8 +5,8 @@ clear all; clc; close all
 Datos_paneles
 
 %% Escoger apartado
-choose = 1;         % 1: Apartado 1      2: Apartado 2
-model = 1;          % 1: Da's model      2: Karmalkar & Hannefa's model      3: Pindado & Cubas's model
+choose = 2;         % 1: Apartado 1      2: Apartado 2
+model = 3;          % 1: Da's model      2: Karmalkar & Hannefa's model      3: Pindado & Cubas's model
 %____________________________________________________________________________________
 %% Puntos caracteristicos
 % Orden de los datos de la matriz A:
@@ -24,7 +24,12 @@ switch(choose)
                10.0367720400000, 27.6047703600000, 27.2574316300000, 30.4460176700000, 6.93744975500000, 11.0813335000000, 29.8260968800000, 9.33467154700000];
     case 2  % Apartado 2
         % cada variable en una fila en el orden indicado, cada columna corresponde a cada uno de las 3 células solares que se estudian
-        dat = ones(7); % tenemos que sacar los puntos críticos
+        dat = [0.467533021000000,0.473000000000000,8.89000000000000;
+               0.459346650000000,0.454000000000000,8.18000000000000;
+               9.81821900000000,2.31000000000000,31.2000000000000;
+               10.9998740000000,2.61000000000000,37.8000000000000;
+               0.892576000000000,0.885057000000000,0.825397000000000;
+               0.982490000000000,0.959831000000000,0.920135000000000]; % tenemos que sacar los puntos críticos
 end
 
 V = zeros(size(dat,2),200);     % Inicializar Voltaje
@@ -72,6 +77,8 @@ switch(model)
             box on
             % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
             plot(  V(i,:) , I_das(i,:),'-k','LineWidth',2)
+            switch(choose)
+                case 1
             switch(i)
                 case 1
                     plot(RTC(:,1), RTC(:,2), ':k','LineWidth',2)
@@ -90,8 +97,20 @@ switch(model)
                 case 8
                     plot(PSC(:,1), PSC(:,2), ':k','LineWidth',2)
             end
+            
+            case 2
+            switch(i)
+                case 1
+                    plot(SIP(:,1), SIP(:,2), ':k','LineWidth',2)
+                case 2
+                    plot(CTJ30(:,1), CTJ30(:,2), ':k','LineWidth',2)
+                case 3
+                    plot(MLU(:,1), MLU(:,2), ':k','LineWidth',2)
+            end
+            end
+            
             axis tight
-            axis([0 dat(4,i)*1.1 0 dat(1,i)*1.1])
+            axis([0 dat(4,i)*1.2 0 dat(1,i)*1.2])
             xlabel('{\it V} [V]')
             ylabel('{\it I} [A]');
             legend({'Modelo completo','Resultados experimentales'},'Location','northeast','NumColumns',2)
@@ -106,6 +125,8 @@ switch(model)
             box on
             % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
             plot( V(i,:), I_das(i,:) .* V(i,:), '-k','LineWidth',1)
+            switch(choose)
+                case 1
             switch(i)
                 case 1
                     plot(RTC(:,1), RTC(:,1).* RTC(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
@@ -124,8 +145,20 @@ switch(model)
                 case 8
                     plot(PSC(:,1), PSC(:,1) .* PSC(:,2), ':k','LineWidth',2)
             end
+            
+            case 2
+            switch(i)
+                case 1
+                    plot(SIP(:,1), SIP(:,1).* SIP(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
+                case 2
+                    plot(CTJ30(:,1), CTJ30(:,1) .* CTJ30(:,2), ':k','LineWidth',2)
+                case 3
+                    plot(MLU(:,1), MLU(:,1) .* MLU(:,2), ':k','LineWidth',2)
+            end
+            end
+            
             axis tight
-            %axis([0 dat(4,i)*1.1 0 dat(1,i)*1.1])
+            axis([0 dat(4,i)*1.2 0 dat(2,i)*dat(3,i)*1.2])
             xlabel('{\it V} [V]')
             ylabel('{\it P} [W]');
             legend({'Modelo explícito','Resultados experimentales'},'Location','northeast','NumColumns',2)
@@ -181,6 +214,8 @@ switch(model)
             % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
             plot( V(i,:) , I_Kar(i,:), '--k','LineWidth',1)
             plot( V(i,:) , I_Kar_simp(i,:), '-k','LineWidth',1)
+            switch(choose)
+                case 1
             switch(i)
                 case 1
                     plot(RTC(:,1), RTC(:,2), ':k','LineWidth',2)
@@ -199,8 +234,20 @@ switch(model)
                 case 8
                     plot(PSC(:,1), PSC(:,2), ':k','LineWidth',2)
             end
+            
+            case 2
+            switch(i)
+                case 1
+                    plot(SIP(:,1), SIP(:,2), ':k','LineWidth',2)
+                case 2
+                    plot(CTJ30(:,1), CTJ30(:,2), ':k','LineWidth',2)
+                case 3
+                    plot(MLU(:,1), MLU(:,2), ':k','LineWidth',2)
+            end
+            end
+            
             axis tight
-            axis([0 dat(4,i)*1.1 0 dat(1,i)*1.1])
+            axis([0 dat(4,i)*1.2 0 dat(1,i)*1.3])
             xlabel('{\it V} [V]')
             ylabel('{\it I} [A]');
             legend({'Modelo completo','Modelo simplificado','Resultados experimentales'},'Location','northeast','NumColumns',2)
@@ -216,6 +263,8 @@ switch(model)
             % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
             plot( V(i,:), I_Kar(i,:) .* V(i,:), '-k','LineWidth',1)
             plot( V(i,:), I_Kar_simp(i,:) .* V(i,:),'--k','LineWidth',1)
+            switch(choose)
+                case 1
             switch(i)
                 case 1
                     plot(RTC(:,1), RTC(:,1).* RTC(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
@@ -234,8 +283,20 @@ switch(model)
                 case 8
                     plot(PSC(:,1), PSC(:,1) .* PSC(:,2), ':k','LineWidth',2)
             end
+            
+            case 2
+            switch(i)
+                case 1
+                    plot(SIP(:,1), SIP(:,1).* SIP(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
+                case 2
+                    plot(CTJ30(:,1), CTJ30(:,1) .* CTJ30(:,2), ':k','LineWidth',2)
+                case 3
+                    plot(MLU(:,1), MLU(:,1) .* MLU(:,2), ':k','LineWidth',2)
+            end
+            end
+            
             axis tight
-            %axis([0 dat(4,i)*1.1 0 dat(1,i)*1.1])
+            axis([0 dat(4,i)*1.2 0 dat(2,i)*dat(3,i)*1.5])
             xlabel('{\it V} [V]')
             ylabel('{\it P} [W]');
             legend({'Modelo completo','Modelo simplificado','Resultados experimentales'},'Location','northeast','NumColumns',2)
@@ -254,6 +315,8 @@ switch(model)
 
         for i=1:size(dat,2)
             eta(i)  = (dat(1,i)/dat(2,i))*(dat(1,i)/(dat(1,i) - dat(2,i)))*((dat(4,i) - dat(3,i))/dat(4,i));
+            switch(choose)
+                case 1
             if i == 1
                 a = RTC(19,1);
                 b = RTC(19,2);
@@ -278,6 +341,18 @@ switch(model)
             elseif i == 8
                 a = PSC(17,1);
                 b = PSC(17,2);
+            end
+                case 2
+            if i == 1
+                a = SIP(19,1);
+                b = SIP(19,2);
+            elseif i == 2
+                a = CTJ30(100,1);
+                b = CTJ30(100,2);
+            elseif i == 3
+                a = MLU(80,1);
+                b = MLU(80,2);
+            end
             end
             eta_ba(i) = (log(dat(2,i)*dat(3,i)-a*b) - log(dat(2,i)*dat(3,i)))/(log(a - dat(3,i)) - log(dat(4,i) - dat(3,i)));
         end
@@ -310,6 +385,8 @@ switch(model)
             % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
             plot( V(i,:) , I_PC(i,:), '--k','LineWidth',1)
             plot( V(i,:) , I_PC_simp(i,:), '-k','LineWidth',1)
+            switch(choose)
+                case 1
             switch(i)
                 case 1
                     plot(RTC(:,1), RTC(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
@@ -328,8 +405,20 @@ switch(model)
                 case 8
                     plot(PSC(:,1), PSC(:,2), ':k','LineWidth',2)
             end
+
+                case 2
+            switch(i)
+                case 1
+                    plot(SIP(:,1), SIP(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
+                case 2
+                    plot(CTJ30(:,1), CTJ30(:,2), ':k','LineWidth',2)
+                case 3
+                    plot(MLU(:,1), MLU(:,2), ':k','LineWidth',2)
+            end
+            end
+            
             axis tight
-            axis([0 dat(4,i)*1.1 0 dat(1,i)*1.1])
+            axis([0 dat(4,i)*1.2 0 dat(1,i)*1.2])
             xlabel('{\it V} [V]')
             ylabel('{\it I} [A]');
             legend({'Modelo completo','Modelo simplificado','Resultados experimentales'},'Location','northeast','NumColumns',2)
@@ -345,6 +434,8 @@ switch(model)
             % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
             plot( V(i,:), I_PC(i,:) .* V(i,:), '-k','LineWidth',2)
             plot( V(i,:), I_PC_simp(i,:) .* V(i,:), '--k','LineWidth',2)
+            switch(choose)
+                case 1
             switch(i)
                 case 1
                     plot(RTC(:,1), RTC(:,1).* RTC(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
@@ -363,8 +454,20 @@ switch(model)
                 case 8
                     plot(PSC(:,1), PSC(:,1) .* PSC(:,2), ':k','LineWidth',2)
             end
+            
+            case 2
+            switch(i)
+                case 1
+                    plot(SIP(:,1), SIP(:,1).* SIP(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
+                case 2
+                    plot(CTJ30(:,1), CTJ30(:,1) .* CTJ30(:,2), ':k','LineWidth',2)
+                case 3
+                    plot(MLU(:,1), MLU(:,1) .* MLU(:,2), ':k','LineWidth',2)
+            end
+            end
+            
             axis tight
-            %axis([0 dat(4,i)*1.1 0 dat(1,i)*1.1])
+            axis([0 dat(4,i)*1.2 0 dat(2,i)*dat(3,i)*1.2])
             xlabel('{\it V} [V]')
             ylabel('{\it P} [W]');
             legend({'Modelo completo','Modelo simplificado','Resultados experimentales'},'Location','northeast','NumColumns',2)
@@ -375,20 +478,20 @@ switch(model)
         %______________________________________________________________________________________
         %% PLOTS
         %%% Lambert W function %%%
-        % figure()
-        % syms x
-        % fplot(lambertw(x))
-        % hold on
-        % fplot(lambertw(-1,x))
-        % hold off
-        % axis([-0.5 4 -4 2])
-        % title('Lambert W function, two main branches')
-        % legend('k=0','k=1','Location','best')
-        %
-        % figure()
-        % syms x y
-        % f = lambertw(x + 1i*y);
-        % interval = [-100 100 -100 100];
-        % fmesh(real(f),interval,'ShowContours','On')
+%         figure()
+%         syms x
+%         fplot(lambertw(x))
+%         hold on
+%         fplot(lambertw(-1,x))
+%         hold off
+%         axis([-0.5 4 -4 2])
+%         title('Lambert W function, two main branches')
+%         legend('k=0','k=1','Location','best')
+%         
+%         figure()
+%         syms x y
+%         f = lambertw(x + 1i*y);
+%         interval = [-100 100 -100 100];
+%         fmesh(real(f),interval,'ShowContours','On')
 
 end
