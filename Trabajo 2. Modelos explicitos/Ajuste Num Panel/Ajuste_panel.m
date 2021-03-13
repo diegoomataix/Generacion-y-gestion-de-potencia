@@ -69,8 +69,8 @@ I_exp= data(:, 2);
 I_exp = I_exp';
 
 T = 33 + 273.15;     %Nominal operating temperature [K]
-n = 1;               %Number of cells in the array
-Vt = n*k*T/q;        %Thermal Voltage   
+% n = 1;               %Number of cells in the array
+% Vt = n*k*T/q;        %Thermal Voltage   
 V_oc = max(V(:));
 I_sc = max(I_exp(:));
 

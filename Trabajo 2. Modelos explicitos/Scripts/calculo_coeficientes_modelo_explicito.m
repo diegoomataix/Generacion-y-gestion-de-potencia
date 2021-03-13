@@ -11,6 +11,11 @@ model = 3;          % 1: Da's model      2: Karmalkar & Hannefa's model      3: 
 %% Puntos caracteristicos
 % Orden de los datos de la matriz A:
 % [ Isc, Imp, Vmp, Voc, betha, alpha, k ]   (cada uno es una fila de la matriz dat)
+global V_oc
+global I_sc
+global V_mp
+global I_mp
+global n
 
 switch(choose)
     case 1  % Apartado 1
@@ -315,6 +320,7 @@ switch(model)
 
         for i=1:size(dat,2)
             eta(i)  = (dat(1,i)/dat(2,i))*(dat(1,i)/(dat(1,i) - dat(2,i)))*((dat(4,i) - dat(3,i))/dat(4,i));
+            
             switch(choose)
                 case 1
             if i == 1
@@ -495,3 +501,61 @@ switch(model)
 %         fmesh(real(f),interval,'ShowContours','On')
 
 end
+
+    switch(model)
+        case 1
+        u = [k; h];
+
+        case 2
+        u = [gamma; m];    
+
+        case 3
+        u = eta;
+
+    end
+
+
+    for i= 1: size(dat, 2)
+        
+    switch(i)
+%     case 1
+%     data = RTC;
+%     case 2
+%     data = TNJ;
+%     case 3
+%     data = ZTJ;
+%     case 4
+%     data = G30C;
+%     case 5
+%     data = PWP;
+%     case 6
+%     data = KC2;
+%     case 7
+%     data = SPV;
+%     case 8
+%     data = PSC;
+    %casos nuestros
+    case 1
+    data = SIP;
+    case 2
+    data = CTJ30;
+    case 3
+    data = MLU;
+    end
+    
+    V = data(:, 1);
+    V = V';
+    I_exp= data(:, 2);
+    I_exp = I_exp';
+    
+    V_oc = max(V(:));
+    I_sc = max(I_exp(:));
+    
+    P = I_exp.*V;
+    [m, j] = max(P);
+    V_mp = V(j);
+    I_mp = I_exp(j);
+    n = length(I_exp);
+
+    error(i) =  RECT(u(:,i),V,I_exp);
+    end
