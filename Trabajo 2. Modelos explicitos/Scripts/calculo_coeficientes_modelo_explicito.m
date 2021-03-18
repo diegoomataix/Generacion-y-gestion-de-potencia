@@ -6,7 +6,7 @@ Datos_paneles
 
 %% Escoger apartado
 choose = 2;         % 1: Apartado 1      2: Apartado 2
-model = 3;          % 1: Da's model      2: Karmalkar & Hannefa's model      3: Pindado & Cubas's model
+model = 2;          % 1: Da's model      2: Karmalkar & Hannefa's model      3: Pindado & Cubas's model
 %____________________________________________________________________________________
 %% Puntos caracteristicos
 % Orden de los datos de la matriz A:
