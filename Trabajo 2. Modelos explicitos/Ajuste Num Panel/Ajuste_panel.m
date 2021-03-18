@@ -85,9 +85,9 @@ n = length(I_exp);
 % Minimize Least squares
 
 %Das
-% [umin,fval]=fminsearch(@(u)RECT(u,V,I_exp),[10,1e-3]);
-% kh(j, :) = umin
-% err(j) = fval
+[umin,fval]=fminsearch(@(u)RECT(u,V,I_exp),[10,1e-3]);
+kh(j, :) = umin
+err(j) = fval
 
 %Karmalkar & Haneefa
 % [umin,fval]=fminsearch(@(u)RECT(u,V,I_exp),[1, 1]);
@@ -95,9 +95,9 @@ n = length(I_exp);
 % err(j) = fval;
 
 %Pindado & Cubas's model
-[umin,fval]=fminsearch(@(u)RECT(u,V,I_exp),[0.5]);
-eta(j) = umin;
-err(j) = fval;
+% [umin,fval]=fminsearch(@(u)RECT(u,V,I_exp),[0.5]);
+% eta(j) = umin;
+% err(j) = fval;
 
 % Results: parameters of equivalent circuit
 % 
