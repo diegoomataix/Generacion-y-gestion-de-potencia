@@ -5,7 +5,7 @@ clear all; clc; close all
 Datos_paneles
 
 %% Escoger apartado
-choose = 2;         % 1: Apartado 1      2: Apartado 2
+choose = 1;         % 1: Apartado 1      2: Apartado 2
 %____________________________________________________________________________________
 %% Puntos caracteristicos
 % Orden de los datos de la matriz A:
@@ -209,9 +209,9 @@ Voc(:) = dat(4,:);
 Rsvec = zeros(1,size(dat,2));
 
 if choose == 1
-    rs0 = [];
+    rs0 = [1 -0.24 -0.24 -0.053 5 5 5 0.5];
 elseif choose == 2
-    rs0 = [1 0.55 0.07];
+    rs0 = [1 0.56 0.07];
 end
 
 for i = 1:size(dat,2)
