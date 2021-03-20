@@ -55,8 +55,10 @@ k = 1.3806503e-23;            % Boltzmann [J/K]
 q = 1.60217646e-19;           % Electron charge [C]
 T = 273.15+28;                % Temperature of the Essay [K]
 n = round(dat(4,:)/2.5,0);    % Number of cells in the Panel (x3 if the cell is triple junction)
-% n(1) = 1;
-% n(8) = 1;
+if choose == 1
+    n(1) = 1;
+    n(8) = 1;
+end
 Vt = n*k*T/q;                 % Thermal Voltage   
 a  = 1.35;
 
@@ -184,7 +186,7 @@ clear Rs Rsh Ipv
 
 % Estimar a2
 
-a2 = 2*[1 1 1];%n;
+a2 = 2*ones(1,size(dat,2));
 
 % Obtener Rs
 
@@ -192,11 +194,11 @@ syms Rs
 
 switch(choose)
     case 1
-        Rsh0 = [-0.0263,-0.00107,-0.00091,-0.000153,-0.00198,-0.0084,-0.002642,-4.6366];
-        Rs0  = [-8.9199,-2.92969,-2.44245,-2.23729,-0.3419,-2.3299,-0.864,-0.7202];
+        Rsh0 = 1./[0.0263,0.00107,0.00091,0.000153,0.00198,0.0084,0.002642,4.6366];
+        Rs0  = 1./[8.9199,2.92969,2.44245,2.23729,0.3419,2.3299,0.864,0.7202];
     case 2
-        Rsh0 = [-0.0004673,-0.0131853,-0.0046559];
-        Rs0  = [-0.57789,-1.6902,-2.899855];
+        Rsh0 = 1./[0.0004673,0.0131853,0.0046559];
+        Rs0  = 1./[0.57789,1.6902,2.899855];
 end
 
 Isc(:) = dat(1,:);
@@ -205,6 +207,12 @@ Vmp(:) = dat(3,:);
 Voc(:) = dat(4,:);
 
 Rsvec = zeros(1,size(dat,2));
+
+if choose == 1
+    rs0 = [];
+elseif choose == 2
+    rs0 = [1 0.55 0.07];
+end
 
 for i = 1:size(dat,2)
     
@@ -215,19 +223,28 @@ equ1(i) = log( ((Rsh0(i)*(Isc(i)-Imp(i))-Vmp(i)) - a2(i)*Vt(i)*((Rsh0(i) - (Vmp(
     / (((Rsh0(i)*(Isc(i)-Imp(i))-Vmp(i))) - (Rsh0(i)*Isc(i) - Voc(i))*exp((Vmp(i)+...
     Imp(i)*Rs-Voc(i))/(a2(i)*Vt(i))));
 
-S1 = vpasolve(equ1(i) == 0, Rs);
+S1 = vpasolve(equ1(i) == 0, Rs, rs0(i));
 
 Rsvec(i) = S1;
 
 end
 
 
+
+% for i = 1:size(dat,2)
+%     Rsvec(i) = CalculoRs(Isc(i),Imp(i),Vmp(i),Voc(i),Rsh0(i),Rs0(i),a2(i),Vt(i));
+% end
+% 
+% Rsvec    = real(Rsvec);
+
 Rsvec    = double(real(Rsvec));
+
 
 % Obtener a1
   
 a1 = (1./Vt).*(((Rsh0.*(Isc-Imp)-Vmp)-(Rsh0.*Isc-Voc).*exp((Vmp+Imp.*Rsvec-Voc)./(a2.*Vt)))...
 .*((Rsh0-Vmp./Imp)./(Vmp./Imp-Rsvec)-(Rsh0-Rs0)./(Rs0-Rsvec).*exp((Vmp+Imp.*Rsvec-Voc)./(a2.*Vt))).^(-1));
+
 
 % for i=1:size(dat,2)
 % a1(i) = (1/Vt(i))*((Rsh0(i)*(Isc(i)-Imp(i))-Vmp(i))-(Rs0(i)*Isc(i)-Voc(i))*exp((Vmp(i)+Imp(i)*Rsvec(i)-Voc(i))/(a2(i)*Vt(i))))...
@@ -246,11 +263,26 @@ Ipv = ( (Rsh + Rsvec) ./ Rsh ) .* Isc;
 
 % Obtencion curvas I-V
 
-for i =1:size(dat,2)
+% syms I_2D2R
+% 
+% 
+%     for j = 1:size(V,2)
+%         
+%     equ2(j) = Ipv(1)-I01(1)*(exp((V(1,j)+Rsvec(1)*I_2D2R)/(Vt(1)*a1(1)))-1)-I02(1)*(exp((V(1,j)+Rsvec(1)*I_2D2R)...
+%         /(Vt(1)*a2(1)))-1)-(V(1,j)+Rsvec(1)*I_2D2R)/Rsh(1) -I_2D2R;
+%     
+%     S2 = vpasolve(equ2(j) == 0, I_2D2R);
+%     
+%     I_2D2Rvect(j) = S2;
+%     
+%     end
+
+
+%I_2D2Rvect    = double(real(S2));
+
+for i = 1:size(dat,2)
     for j = 1:size(V,2)
-        
-    I2D2R(i,j) = modelo2D2R(Ipv(i),Rsvec(i),Rsh(i),I01(i),I02(i),a1(i),a2(i),V(i,j),Vt(i));
-    
+        I2D2R(i,j) = modelo2D2R(Ipv(i),Rsvec(i),Rsh(i),I01(i),I02(i),a1(i),a2(i),V(i,j),Vt(i));
     end
 end
 
@@ -263,39 +295,39 @@ for i = 1: size(dat,2)
     hold on
     grid on
     box on
-    % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
+    %axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
     plot(  V(i,:) , I2D2R(i,:),'-k','LineWidth',2)
-%     switch(choose)
-%         case 1
-%             switch(i)
-%                 case 1
-%                     plot(RTC(:,1), RTC(:,2), ':k','LineWidth',2)
-%                 case 2
-%                     plot(TNJ(:,1), TNJ(:,2), ':k','LineWidth',2)
-%                 case 3
-%                     plot(ZTJ(:,1), ZTJ(:,2), ':k','LineWidth',2)
-%                 case 4
-%                     plot(G30C(:,1), G30C(:,2), ':k','LineWidth',2)
-%                 case 5
-%                     plot(PWP(:,1), PWP(:,2), ':k','LineWidth',2)
-%                 case 6
-%                     plot(KC2(:,1), KC2(:,2), ':k','LineWidth',2)
-%                 case 7
-%                     plot(SPV(:,1), SPV(:,2), ':k','LineWidth',2)
-%                 case 8
-%                     plot(PSC(:,1), PSC(:,2), ':k','LineWidth',2)
-%             end
-%             
-%         case 2
-%             switch(i)
-%                 case 1
-%                     plot(SIP(:,1), SIP(:,2), ':k','LineWidth',2)
-%                 case 2
-%                     plot(CTJ30(:,1), CTJ30(:,2), ':k','LineWidth',2)
-%                 case 3
-%                     plot(MLU(:,1), MLU(:,2), ':k','LineWidth',2)
-%             end
-%     end
+    switch(choose)
+        case 1
+            switch(i)
+                case 1
+                    plot(RTC(:,1), RTC(:,2), ':k','LineWidth',2)
+                case 2
+                    plot(TNJ(:,1), TNJ(:,2), ':k','LineWidth',2)
+                case 3
+                    plot(ZTJ(:,1), ZTJ(:,2), ':k','LineWidth',2)
+                case 4
+                    plot(G30C(:,1), G30C(:,2), ':k','LineWidth',2)
+                case 5
+                    plot(PWP(:,1), PWP(:,2), ':k','LineWidth',2)
+                case 6
+                    plot(KC2(:,1), KC2(:,2), ':k','LineWidth',2)
+                case 7
+                    plot(SPV(:,1), SPV(:,2), ':k','LineWidth',2)
+                case 8
+                    plot(PSC(:,1), PSC(:,2), ':k','LineWidth',2)
+            end
+            
+        case 2
+            switch(i)
+                case 1
+                    plot(SIP(:,1), SIP(:,2), ':k','LineWidth',2)
+                case 2
+                    plot(CTJ30(:,1), CTJ30(:,2), ':k','LineWidth',2)
+                case 3
+                    plot(MLU(:,1), MLU(:,2), ':k','LineWidth',2)
+            end
+    end
     
     axis tight
     axis([0 dat(4,i)*1.2 0 dat(1,i)*1.2])
@@ -306,54 +338,54 @@ for i = 1: size(dat,2)
     set(gca,'FontSize',18)
     hold off
     
-    % Plot P-V
-            figure()
-            hold on
-            grid on
-            box on
-            % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
-            plot( V(i,:), I2D2R(i,:) .* V(i,:), '-k','LineWidth',1)
-%             switch(choose)
-%                 case 1
-%             switch(i)
-%                 case 1
-%                     plot(RTC(:,1), RTC(:,1).* RTC(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
-%                 case 2
-%                     plot(TNJ(:,1), TNJ(:,1) .* TNJ(:,2), ':k','LineWidth',2)
-%                 case 3
-%                     plot(ZTJ(:,1), ZTJ(:,1) .* ZTJ(:,2), ':k','LineWidth',2)
-%                 case 4
-%                     plot(G30C(:,1), G30C(:,1) .* G30C(:,2), ':k','LineWidth',2)
-%                 case 5
-%                     plot(PWP(:,1), PWP(:,1).* PWP(:,2), ':k','LineWidth',2)
-%                 case 6
-%                     plot(KC2(:,1), KC2(:,1).* KC2(:,2), ':k','LineWidth',2)
-%                 case 7
-%                     plot(SPV(:,1), SPV(:,1) .* SPV(:,2), ':k','LineWidth',2)
-%                 case 8
-%                     plot(PSC(:,1), PSC(:,1) .* PSC(:,2), ':k','LineWidth',2)
-%             end
+%     % Plot P-V
+%             figure()
+%             hold on
+%             grid on
+%             box on
+%             % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
+%             plot( V(i,:), I2D2R(i,:) .* V(i,:), '-k','LineWidth',1)
+% %             switch(choose)
+% %                 case 1
+% %             switch(i)
+% %                 case 1
+% %                     plot(RTC(:,1), RTC(:,1).* RTC(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
+% %                 case 2
+% %                     plot(TNJ(:,1), TNJ(:,1) .* TNJ(:,2), ':k','LineWidth',2)
+% %                 case 3
+% %                     plot(ZTJ(:,1), ZTJ(:,1) .* ZTJ(:,2), ':k','LineWidth',2)
+% %                 case 4
+% %                     plot(G30C(:,1), G30C(:,1) .* G30C(:,2), ':k','LineWidth',2)
+% %                 case 5
+% %                     plot(PWP(:,1), PWP(:,1).* PWP(:,2), ':k','LineWidth',2)
+% %                 case 6
+% %                     plot(KC2(:,1), KC2(:,1).* KC2(:,2), ':k','LineWidth',2)
+% %                 case 7
+% %                     plot(SPV(:,1), SPV(:,1) .* SPV(:,2), ':k','LineWidth',2)
+% %                 case 8
+% %                     plot(PSC(:,1), PSC(:,1) .* PSC(:,2), ':k','LineWidth',2)
+% %             end
+% %             
+% %             case 2
+% %             switch(i)
+% %                 case 1
+% %                     plot(SIP(:,1), SIP(:,1).* SIP(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
+% %                 case 2
+% %                     plot(CTJ30(:,1), CTJ30(:,1) .* CTJ30(:,2), ':k','LineWidth',2)
+% %                 case 3
+% %                     plot(MLU(:,1), MLU(:,1) .* MLU(:,2), ':k','LineWidth',2)
+% %             end
+% %             end
 %             
-%             case 2
-%             switch(i)
-%                 case 1
-%                     plot(SIP(:,1), SIP(:,1).* SIP(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
-%                 case 2
-%                     plot(CTJ30(:,1), CTJ30(:,1) .* CTJ30(:,2), ':k','LineWidth',2)
-%                 case 3
-%                     plot(MLU(:,1), MLU(:,1) .* MLU(:,2), ':k','LineWidth',2)
-%             end
-%             end
-            
-            axis tight
-            axis([0 dat(4,i)*1.2 0 dat(2,i)*dat(3,i)*1.2])
-            xlabel('{\it V} [V]')
-            ylabel('{\it P} [W]');
-            legend({'Modelo explícito','Resultados experimentales'},'Location','northeast','NumColumns',2)
-            box on
-            set(gca,'FontSize',18)
-            hold off
-        
+%             axis tight
+%             axis([0 dat(4,i)*1.2 0 dat(2,i)*dat(3,i)*1.2])
+%             xlabel('{\it V} [V]')
+%             ylabel('{\it P} [W]');
+%             legend({'Modelo explícito','Resultados experimentales'},'Location','northeast','NumColumns',2)
+%             box on
+%             set(gca,'FontSize',18)
+%             hold off
+%         
 end
 
 %% Funciones
@@ -390,6 +422,15 @@ function I_2D2R = modelo2D2R(Ipv,Rs,Rsh,I01,I02,a1,a2,V,Vt)
 end
 
 
-
+% function cRss = CalculoRs(Isc,Imp,Vmp,Voc,Rsh0,Rs0,a2,Vt)
+% 
+% cRss = fzero(@(Rs) log( ((Rsh0*(Isc-Imp)-Vmp) - a2*Vt*((Rsh0 - (Vmp/Imp))...
+%      / ((Vmp/Imp) - Rs))) / ((Rsh0*Isc - Voc)-a2*Vt*((Rsh0-Rs0)/(Rs0-Rs)))) ...
+%      - ( (Vmp + Imp*Rs - Voc)*(((Rsh0 - (Vmp/Imp))/((Vmp/Imp)-Rs)) - ...
+%      ((Rsh0 -Rs0)/(Rs0-Rs))*exp((Vmp + Imp*Rs-Voc)/(a2*Vt)))) ...
+%      / (((Rsh0*(Isc-Imp)-Vmp)) - (Rsh0*Isc - Voc)*exp((Vmp+...
+%      Imp*Rs-Voc)/(a2*Vt))),-0.5);
+%  
+% end
 
 
