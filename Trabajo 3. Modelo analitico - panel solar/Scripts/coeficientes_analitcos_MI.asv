@@ -184,7 +184,7 @@ clear Rs Rsh Ipv
 
 % Estimar a2
 
-a2 = 2*[1 1 1];%n;
+a2 = 2*n;
 
 % Obtener Rs
 
@@ -225,14 +225,9 @@ end
 Rsvec    = double(real(Rsvec));
 
 % Obtener a1
-  
-a1 = (1./Vt).*(((Rsh0.*(Isc-Imp)-Vmp)-(Rsh0.*Isc-Voc).*exp((Vmp+Imp.*Rsvec-Voc)./(a2.*Vt)))...
-.*((Rsh0-Vmp./Imp)./(Vmp./Imp-Rsvec)-(Rsh0-Rs0)./(Rs0-Rsvec).*exp((Vmp+Imp.*Rsvec-Voc)./(a2.*Vt))).^(-1));
-
-% for i=1:size(dat,2)
-% a1(i) = (1/Vt(i))*((Rsh0(i)*(Isc(i)-Imp(i))-Vmp(i))-(Rs0(i)*Isc(i)-Voc(i))*exp((Vmp(i)+Imp(i)*Rsvec(i)-Voc(i))/(a2(i)*Vt(i))))...
-% *((Rsh0(i)-Vmp(i)/Imp(i))/(Vmp(i)/Imp(i)-Rsvec(i))-(Rsh0(i)-Rs0(i))/(Rs0(i)-Rsvec(i))*exp((Vmp(i)+Imp(i)*Rsvec(i)-Voc(i))/(a2(i)*Vt(i))))^(-1);
-% end
+   
+a1 = (1./Vt).*((Rsh0.*(Isc-Imp)-Vmp)-(Rs0.*Isc-Voc).*exp((Vmp+Imp.*Rsvec-Voc)./(a2.*Vt)))...
+.*((Rsh0-Vmp./Imp)./(Vmp./Imp-Rsvec)-(Rsh0-Rs0)./(Rs0-Rsvec).*exp((Vmp+Imp.*Rsvec-Voc)./(a2.*Vt))).^(-1);
 
 % Obtener I01 e I02
 
