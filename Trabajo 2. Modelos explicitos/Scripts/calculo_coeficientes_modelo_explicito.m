@@ -558,4 +558,37 @@ end
     n = length(I_exp);
 
     error(i) =  RECT(u(:,i),V,I_exp);
+    RMSE_adim(i) = RMSE_NonDim(u(:,i),V,I_exp);
+    
+    [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)] = error_PbPfun(u(:,i),V,I_exp);
+    
+    %Plot error en cada punto
+
+    figure()
+    axis tight
+    xlabel('{\it V} [V]')
+    ylabel('{\it | I-I_{exp} |');
+    title('Error entre el modelo y las medidas experimentales')
+    box on
+    set(gca,'FontSize',18)
+    hold on
+    V_plot(:) = linspace(0,dat(4,i),size(I_exp,2));
+    plot(V_plot(:), RMSE_PbP_Dim(:),'k','LineWidth',2)
+    
+    figure()
+    axis tight
+    xlabel('{\it V} [V]')
+    ylabel('{\it | I-I_{exp} | / I_{sc}}');
+    title('Error adimensional entre el modelo y las medidas experimentales')
+    box on
+    set(gca,'FontSize',18)
+    hold on
+    plot(V_plot(:), RMSE_PbP_NonDim(:),'k','LineWidth',2)
+    
+    clear RMSE_PbP_Dim
+    clear RMSE_PbP_NonDim
+    clear V_plot
+    %RMSE_PbP_NonDim(i,:) = error_PbPfun(u(:,i),V,I_exp);
+    
     end
+    
