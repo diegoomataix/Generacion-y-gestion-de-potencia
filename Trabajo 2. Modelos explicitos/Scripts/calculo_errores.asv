@@ -582,11 +582,11 @@ for model = 1:3
 %     set(gca,'FontSize',18)
 %     hold on
 if model == 1
-    plot(V(:), RMSE_PbP_NonDim(:),'-sk','LineWidth',2, 'MarkerSize', 12,'MarkerIndices',1:50:length(V_plot))
+    plot(V(:), RMSE_PbP_NonDim(:),'-sk','LineWidth',2, 'MarkerSize', 10,'MarkerIndices',1:50:length(V_plot))
 elseif model == 2 
-       plot(V(:), RMSE_PbP_NonDim(:),'-ok','LineWidth',2,'MarkerSize', 12,'MarkerIndices',1:50:length(V_plot))
+       plot(V(:), RMSE_PbP_NonDim(:),'-ok','LineWidth',2,'MarkerSize', 10,'MarkerIndices',1:50:length(V_plot))
 elseif model == 3
-        plot(V(:), RMSE_PbP_NonDim(:),'-dk','LineWidth',2,'MarkerSize', 12,'MarkerIndices',1:50:length(V_plot))
+        plot(V(:), RMSE_PbP_NonDim(:),'-dk','LineWidth',2,'MarkerSize', 10,'MarkerIndices',1:50:length(V_plot))
 end 
 legend('Das', 'Kalmalkar y Hannefa' , 'Pindado y Cubas')
         

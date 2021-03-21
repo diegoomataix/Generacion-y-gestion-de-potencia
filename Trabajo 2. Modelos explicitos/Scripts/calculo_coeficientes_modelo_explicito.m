@@ -6,7 +6,7 @@ Datos_paneles
 global model
 %% Escoger apartado
 choose = 2;         % 1: Apartado 1      2: Apartado 2
-model = 1;          % 1: Da's model      2: Karmalkar & Hannefa's model      3: Pindado & Cubas's model1
+model = 3;          % 1: Da's model      2: Karmalkar & Hannefa's model      3: Pindado & Cubas's model1
 %____________________________________________________________________________________
 %% Puntos caracteristicos
 % Orden de los datos de la matriz A:
@@ -69,7 +69,7 @@ switch(model)
         I_das = zeros(size(dat,2),size(V,2));
         for i = 1:size(dat,2)
             for j = 1: size(V,2)
-                I_das(i,j) = dat(1,i) .* ( ( 1 - ( V(i,j) ./ dat(4,i) ) .^k(i) ./ ( 1 + h(i) .* ( V(i,j) ./ dat(4,i) ) ) ) );
+                I_das(i,j) = dat(1,i) .* ( ( 1 - ( V(i,j) ./ dat(4,i) ) .^k(i)) ./ ( 1 + h(i) .* ( V(i,j) ./ dat(4,i) ) ) ) ;
             end
         end
 
@@ -511,7 +511,7 @@ end
         u = [gamma; m];    
 
         case 3
-        u = eta;
+        u = eta_ba;
 
     end
 
@@ -565,17 +565,17 @@ end
     n = length(I_exp);
 
     
-   if size(u,2) > 1
+   if size(u,1) > 1
     error(i) =  RECT(u(:,i),V,I_exp);
     RMSE_adim(i) = RMSE_NonDim(u(:,i),V,I_exp);
     
-    [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)] = error_PbPfun(u(:,i),V,I_exp);
+    [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:),~] = error_PbPfun(u(:,i),V,I_exp);
    
    else 
-    error(i) =  RECT(u,V,I_exp);
-    RMSE_adim(i) = RMSE_NonDim(u,V,I_exp);
+    error(i) =  RECT(u(i),V,I_exp);
+    RMSE_adim(i) = RMSE_NonDim(u(i),V,I_exp);
     
-   [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)] = error_PbPfun(u,V,I_exp);
+   [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:),~] = error_PbPfun(u(i),V,I_exp);
    end 
     %Plot error en cada punto
 
