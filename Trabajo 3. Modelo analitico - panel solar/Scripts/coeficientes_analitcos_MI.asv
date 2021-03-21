@@ -120,21 +120,21 @@ RMSE_adim(i) = RMSE_NonDim(I_modelo(i,1:N),I_exp);
 
     switch(i)
         case 1
-            RTC_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            RTC_error_PbP = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
         case 2 
-            TNJ_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            TNJ_error_PbP = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
         case 3
-            ZTJ_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            ZTJ_error_PbP = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
          case 4
-            G30C_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            G30C_error_PbP = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
         case 5 
-            PWP_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            PWP_error_PbP = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
         case 6
-            KC2_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            KC2_error_PbP = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
         case 7
-            SPV_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            SPV_error_PbP = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
         case 8 
-            PSC_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            PSC_error_PbP = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
     end
     clear RMSE_PbP_Dim
     clear RMSE_PbP_NonDim
