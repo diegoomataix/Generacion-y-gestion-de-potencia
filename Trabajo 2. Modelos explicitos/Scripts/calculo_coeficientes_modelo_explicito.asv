@@ -5,8 +5,8 @@ clear all; clc; close all
 Datos_paneles
 global model
 %% Escoger apartado
-choose = 2;         % 1: Apartado 1      2: Apartado 2
-model = 1;          % 1: Da's model      2: Karmalkar & Hannefa's model      3: Pindado & Cubas's model1
+choose =;         % 1: Apartado 1      2: Apartado 2
+model = 3;          % 1: Da's model      2: Karmalkar & Hannefa's model      3: Pindado & Cubas's model1
 %____________________________________________________________________________________
 %% Puntos caracteristicos
 % Orden de los datos de la matriz A:
@@ -517,8 +517,7 @@ end
 
 
     for i= 1: size(dat, 2)
-    switch(choose)
-        case 1
+        
     switch(i)
     case 1
     data = RTC;
@@ -536,19 +535,14 @@ end
     data = SPV;
     case 8
     data = PSC;
-    end
-    
-        case 2
-    % casos nuestros
-    switch(i)
-    case 1
-    data = SIP;
-    case 2
-    data = CTJ30;
-    case 3
-    data = MLU;
-    end
-    end
+    %casos nuestros
+%     case 1
+%     data = SIP;
+%     case 2
+%     data = CTJ30;
+%     case 3
+%     data = MLU;
+     end
     
     V = data(:, 1);
     V = V';
