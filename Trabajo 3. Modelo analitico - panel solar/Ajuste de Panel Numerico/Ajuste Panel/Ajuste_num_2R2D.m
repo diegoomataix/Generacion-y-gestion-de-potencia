@@ -1,6 +1,7 @@
 clc
 clear all
 global Vt % Global constant
+global n_dat
 
 % Constants
 k = 1.3806503e-23;   %Boltzmann [J/K]
@@ -103,8 +104,10 @@ I_sc = max(I_exp(:));
 Isc(j)=I_sc;
 
 Vt = n*k*T/q;        %Thermal Voltage
+n_dat = length(I_exp);
 
-% Minimize Least squares
+Isc(j) = max(I_exp);
+Minimize Least squares
 [umin,fval]=fminsearch(@(u)RECT_2R2D(u,V,I_exp), U0);            % @ u le dice a la función que miniize u
 
 % Results: parameters of equivalent circuit
@@ -116,6 +119,8 @@ Rs(j)=umin(4);
 Rsh(j)=umin(5);
 a1(j)=umin(6);
 a2(j)=umin(7);
+error(j) = fval;
+xi(j) = error(j)/max(I_exp);
 
 %Calculo de inputs del modelo analitico
 

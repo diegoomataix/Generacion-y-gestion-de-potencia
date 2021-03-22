@@ -1,7 +1,7 @@
 clc
 clear all
 global Vt % Global constant
-
+global n_dat
 % Constants
 k = 1.3806503e-23;   %Boltzmann [J/K]
 q = 1.60217646e-19;  %Electron charge [C]
@@ -100,17 +100,18 @@ I_exp = I_exp';
 V_oc = max(V(:));
 
 Vt = n*k*T/q;        %Thermal Voltage
+n_dat = length(I_exp);
 
 % Minimize Least squares
 [umin,fval]=fminsearch(@(u)RECT(u,V,I_exp), U0);            % @ u le dice a la función que miniize u
 
 % Results: parameters of equivalent circuit
-Ipv=umin(1)
-I0=umin(2)
-Rs=umin(3)
-Rsh=umin(4)
-a=umin(5)
-
+Ipv(j)= umin(1)
+I0(j)= umin(2)
+Rs(j)= umin(3)
+Rsh(j)= umin(4)
+a(j)= umin(5)
+RMSE(j)= fval
 % plot results
 
  I_modelo = zeros(size(V,2),1)';
