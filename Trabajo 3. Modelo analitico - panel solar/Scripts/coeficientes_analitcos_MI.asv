@@ -79,12 +79,47 @@ for i = 1:size(dat,2)     % bucle para los distintos paneles
 end
 
 %Calculo de errores
+switch(choose)
+    case 1
 N_exp = [size(RTC,1),size(TNJ,1),size(ZTJ,1),size(G30C,1),size(PWP,1),size(KC2,1),size(SPV,1),size(PSC,1)];
-I_modelo =zeros(8,max(N_exp));
-str = ["RTC_error_PbP","TNJ_error_PbP","ZTJ_error_PbP","G30C_error_PbP","PWP_error_PbP","KC2_error_PbP","SPV_error_PbP","PSC_error_PbP"];
+    case 2
+N_exp = [size(SIP,1),size(CTJ30,1),size(MLU,1)];    
+end 
+I_modelo =zeros(size(dat,2),max(N_exp));
 for i = 1:size(dat,2) % bucle para los distintos paneles
     N = N_exp(i);
-    V_exp(:) = linspace(0,dat(4,i),N);
+    switch(choose)
+        case 1
+            switch(i)
+                case 1
+                    V_exp = RTC(:,1)';
+                case 2
+                    V_exp = TNJ(:,1)';
+                case 3
+                    V_exp = ZTJ(:,1)';
+                case 4
+                    V_exp = G30C(:,1)';
+                case 5
+                    V_exp = PWP(:,1)';
+                case 6
+                    V_exp = KC2(:,1)';
+                case 7
+                    V_exp = SPV(:,1)';
+                case 8
+                    V_exp = PSC(:,1)';
+            end
+        case 2
+            
+            switch(i)
+                case 1
+                    V_exp = SIP(:,1)';
+                case 2
+                    V_exp = CTJ30(:,1)';
+                case 3
+                    V_exp = MLU(:,1)';
+            end
+    end
+%     V_exp(:) = linspace(0,dat(4,i),N);
     for j = 1:N   % bucle para el voltaje      
     I_modelo(i,j) = (Rsh(i)*(Ipv(i) + I0(i)) - V_exp(1,j))/(Rs(i) + Rsh(i)) - ((a*Vt(i))/Rs(i))*...
         lambertw(0,(((Rs(i)*Rsh(i)*I0(i))/((a*Vt(i))*(Rs(i) + Rsh(i))))*exp((Rsh(i)*...
@@ -95,6 +130,8 @@ end
 
 for i = 1:size(dat,2)
     N = N_exp(i);
+    switch(choose)
+        case 1
     switch(i)
         case 1
             I_exp = RTC(:,2)';
@@ -113,134 +150,156 @@ for i = 1:size(dat,2)
         case 8 
             I_exp = PSC(:,2)';
     end 
+        case 2
+            switch(i)
+        case 1
+            I_exp = SIP(:,2)';
+        case 2 
+            I_exp = CTJ30(:,2)';
+        case 3
+            I_exp = MLU(:,2)';
+            end
+    end  
      
-error(i) =  RECT(I_modelo(i,1:N),I_exp);
-RMSE_adim(i) = RMSE_NonDim(I_modelo(i,1:N),I_exp);
+error_1D2R(i) =  RECT(I_modelo(i,1:N),I_exp);
+RMSE_adim_1D2R(i) = RMSE_NonDim(I_modelo(i,1:N),I_exp);
 [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)] = error_PbPfun(I_modelo(i,1:N),I_exp);
-
+switch(choose)
+    case 1
     switch(i)
         case 1
-            RTC_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            RTC_error_PbP_1D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
         case 2 
-            TNJ_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            TNJ_error_PbP_1D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
         case 3
-            ZTJ_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            ZTJ_error_PbP_1D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
          case 4
-            G30C_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            G30C_error_PbP_1D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
         case 5 
-            PWP_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            PWP_error_PbP_1D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
         case 6
-            KC2_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            KC2_error_PbP_1D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
         case 7
-            SPV_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            SPV_error_PbP_1D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
         case 8 
-            PSC_error_PbP_1D2R = [RMSE_PbP_Dim(:);RMSE_PbP_NonDim(:)];
+            PSC_error_PbP_1D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
     end
+      
+    case 2
+        switch(i)
+        case 1
+            SIP_error_PbP_1D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
+        case 2 
+            CTJ30_error_PbP_1D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
+        case 3
+            MLU_error_PbP_1D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
+        end
+end
     clear RMSE_PbP_Dim
     clear RMSE_PbP_NonDim
 end
 
 
 
-% for i = 1: size(dat,2)
-% 
-%     % Plot I-V
-%     figure()
-%     hold on
-%     grid on
-%     box on
-%     % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
-%     plot(  V(i,:) , I(i,:),'-k','LineWidth',2)
-%     switch(choose)
-%         case 1
-%             switch(i)
-%                 case 1
-%                     plot(RTC(:,1), RTC(:,2), ':k','LineWidth',2)
-%                 case 2
-%                     plot(TNJ(:,1), TNJ(:,2), ':k','LineWidth',2)
-%                 case 3
-%                     plot(ZTJ(:,1), ZTJ(:,2), ':k','LineWidth',2)
-%                 case 4
-%                     plot(G30C(:,1), G30C(:,2), ':k','LineWidth',2)
-%                 case 5
-%                     plot(PWP(:,1), PWP(:,2), ':k','LineWidth',2)
-%                 case 6
-%                     plot(KC2(:,1), KC2(:,2), ':k','LineWidth',2)
-%                 case 7
-%                     plot(SPV(:,1), SPV(:,2), ':k','LineWidth',2)
-%                 case 8
-%                     plot(PSC(:,1), PSC(:,2), ':k','LineWidth',2)
-%             end
-%             
-%         case 2
-%             switch(i)
-%                 case 1
-%                     plot(SIP(:,1), SIP(:,2), ':k','LineWidth',2)
-%                 case 2
-%                     plot(CTJ30(:,1), CTJ30(:,2), ':k','LineWidth',2)
-%                 case 3
-%                     plot(MLU(:,1), MLU(:,2), ':k','LineWidth',2)
-%             end
-%     end
-%     
-%     axis tight
-%     axis([0 dat(4,i)*1.2 0 dat(1,i)*1.2])
-%     xlabel('{\it V} [V]')
-%     ylabel('{\it I} [A]');
-%     legend({'Modelo completo','Resultados experimentales'},'Location','northeast','NumColumns',2)
-%     box on
-%     set(gca,'FontSize',18)
-%     hold off
-%     
-%     % Plot P-V
-%             figure()
-%             hold on
-%             grid on
-%             box on
-%             % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
-%             plot( V(i,:), I(i,:) .* V(i,:), '-k','LineWidth',1)
-%             switch(choose)
-%                 case 1
-%             switch(i)
-%                 case 1
-%                     plot(RTC(:,1), RTC(:,1).* RTC(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
-%                 case 2
-%                     plot(TNJ(:,1), TNJ(:,1) .* TNJ(:,2), ':k','LineWidth',2)
-%                 case 3
-%                     plot(ZTJ(:,1), ZTJ(:,1) .* ZTJ(:,2), ':k','LineWidth',2)
-%                 case 4
-%                     plot(G30C(:,1), G30C(:,1) .* G30C(:,2), ':k','LineWidth',2)
-%                 case 5
-%                     plot(PWP(:,1), PWP(:,1).* PWP(:,2), ':k','LineWidth',2)
-%                 case 6
-%                     plot(KC2(:,1), KC2(:,1).* KC2(:,2), ':k','LineWidth',2)
-%                 case 7
-%                     plot(SPV(:,1), SPV(:,1) .* SPV(:,2), ':k','LineWidth',2)
-%                 case 8
-%                     plot(PSC(:,1), PSC(:,1) .* PSC(:,2), ':k','LineWidth',2)
-%             end
-%             
-%             case 2
-%             switch(i)
-%                 case 1
-%                     plot(SIP(:,1), SIP(:,1).* SIP(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
-%                 case 2
-%                     plot(CTJ30(:,1), CTJ30(:,1) .* CTJ30(:,2), ':k','LineWidth',2)
-%                 case 3
-%                     plot(MLU(:,1), MLU(:,1) .* MLU(:,2), ':k','LineWidth',2)
-%             end
-%             end
-%             
-%             axis tight
-%             axis([0 dat(4,i)*1.2 0 dat(2,i)*dat(3,i)*1.2])
-%             xlabel('{\it V} [V]')
-%             ylabel('{\it P} [W]');
-%             legend({'Modelo explícito','Resultados experimentales'},'Location','northeast','NumColumns',2)
-%             box on
-%             set(gca,'FontSize',18)
-%             hold off
-%         
-% end
+for i = 1: size(dat,2)
+
+    % Plot I-V
+    figure()
+    hold on
+    grid on
+    box on
+    % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
+    plot(  V(i,:) , I(i,:),'-k','LineWidth',2)
+    switch(choose)
+        case 1
+            switch(i)
+                case 1
+                    plot(RTC(:,1), RTC(:,2), ':k','LineWidth',2)
+                case 2
+                    plot(TNJ(:,1), TNJ(:,2), ':k','LineWidth',2)
+                case 3
+                    plot(ZTJ(:,1), ZTJ(:,2), ':k','LineWidth',2)
+                case 4
+                    plot(G30C(:,1), G30C(:,2), ':k','LineWidth',2)
+                case 5
+                    plot(PWP(:,1), PWP(:,2), ':k','LineWidth',2)
+                case 6
+                    plot(KC2(:,1), KC2(:,2), ':k','LineWidth',2)
+                case 7
+                    plot(SPV(:,1), SPV(:,2), ':k','LineWidth',2)
+                case 8
+                    plot(PSC(:,1), PSC(:,2), ':k','LineWidth',2)
+            end
+            
+        case 2
+            switch(i)
+                case 1
+                    plot(SIP(:,1), SIP(:,2), ':k','LineWidth',2)
+                case 2
+                    plot(CTJ30(:,1), CTJ30(:,2), ':k','LineWidth',2)
+                case 3
+                    plot(MLU(:,1), MLU(:,2), ':k','LineWidth',2)
+            end
+    end
+    
+    axis tight
+    axis([0 dat(4,i)*1.2 0 dat(1,i)*1.2])
+    xlabel('{\it V} [V]')
+    ylabel('{\it I} [A]');
+    legend({'Modelo completo','Resultados experimentales'},'Location','northeast','NumColumns',2)
+    box on
+    set(gca,'FontSize',18)
+    hold off
+    
+    % Plot P-V
+            figure()
+            hold on
+            grid on
+            box on
+            % axis([V(i,1) V(i,end)  I_das(i,1)+1  0])
+            plot( V(i,:), I(i,:) .* V(i,:), '-k','LineWidth',1)
+            switch(choose)
+                case 1
+            switch(i)
+                case 1
+                    plot(RTC(:,1), RTC(:,1).* RTC(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
+                case 2
+                    plot(TNJ(:,1), TNJ(:,1) .* TNJ(:,2), ':k','LineWidth',2)
+                case 3
+                    plot(ZTJ(:,1), ZTJ(:,1) .* ZTJ(:,2), ':k','LineWidth',2)
+                case 4
+                    plot(G30C(:,1), G30C(:,1) .* G30C(:,2), ':k','LineWidth',2)
+                case 5
+                    plot(PWP(:,1), PWP(:,1).* PWP(:,2), ':k','LineWidth',2)
+                case 6
+                    plot(KC2(:,1), KC2(:,1).* KC2(:,2), ':k','LineWidth',2)
+                case 7
+                    plot(SPV(:,1), SPV(:,1) .* SPV(:,2), ':k','LineWidth',2)
+                case 8
+                    plot(PSC(:,1), PSC(:,1) .* PSC(:,2), ':k','LineWidth',2)
+            end
+            
+            case 2
+            switch(i)
+                case 1
+                    plot(SIP(:,1), SIP(:,1).* SIP(:,2), ':k','LineWidth',2)      % 'Color', '#494949'
+                case 2
+                    plot(CTJ30(:,1), CTJ30(:,1) .* CTJ30(:,2), ':k','LineWidth',2)
+                case 3
+                    plot(MLU(:,1), MLU(:,1) .* MLU(:,2), ':k','LineWidth',2)
+            end
+            end
+            
+            axis tight
+            axis([0 dat(4,i)*1.2 0 dat(2,i)*dat(3,i)*1.2])
+            xlabel('{\it V} [V]')
+            ylabel('{\it P} [W]');
+            legend({'Modelo explícito','Resultados experimentales'},'Location','northeast','NumColumns',2)
+            box on
+            set(gca,'FontSize',18)
+            hold off
+        
+end
 
 %% MODELO DE CIRCUITO EQUIVALENTE 2D2R (queda por revisar, da intensidades de mierda)
 
@@ -278,7 +337,7 @@ Voc(:) = dat(4,:);
 Rsvec = zeros(1,size(dat,2));
 
 if choose == 1
-    rs0 = [0.1 0.29817 0.323727530 0.05 2.3 -0.5 -0.5 0.];
+    rs0 = [0.1 0.29817 0.323727530 0.05 2.5 55e-2 65.115e-2 0.01];
 elseif choose == 2
     rs0 = [1 -8.58 0.07];
 end
@@ -353,6 +412,123 @@ for i = 1:size(dat,2)
     for j = 1:size(V,2)
         I2D2R(i,j) = modelo2D2R(Ipv(i),Rsvec(i),Rsh(i),I01(i),I02(i),a1(i),a2(i),V(i,j),Vt(i));
     end
+end
+
+%Calculo de errores
+
+I_modelo_2D2R =zeros(size(dat,2),max(N_exp));
+for i = 1:size(dat,2) % bucle para los distintos paneles
+    N = N_exp(i);
+    switch(choose)
+        case 1
+            switch(i)
+                case 1
+                    V_exp = RTC(:,1)';
+                case 2
+                    V_exp = TNJ(:,1)';
+                case 3
+                    V_exp = ZTJ(:,1)';
+                case 4
+                    V_exp = G30C(:,1)';
+                case 5
+                    V_exp = PWP(:,1)';
+                case 6
+                    V_exp = KC2(:,1)';
+                case 7
+                    V_exp = SPV(:,1)';
+                case 8
+                    V_exp = PSC(:,1)';
+            end
+        case 2
+            
+            switch(i)
+                case 1
+                    V_exp = SIP(:,1)';
+                case 2
+                    V_exp = CTJ30(:,1)';
+                case 3
+                    V_exp = MLU(:,1)';
+            end
+    end
+    %     V_exp(:) = linspace(0,dat(4,i),N);
+    for j = 1:N   % bucle para el voltaje
+        I_modelo_2D2R(i,j) = modelo2D2R(Ipv(i),Rsvec(i),Rsh(i),I01(i),I02(i),a1(i),a2(i),V_exp(1,j),Vt(i));
+    end
+    clear V_exp
+end
+
+for i = 1:size(dat,2)
+    N = N_exp(i);
+    switch(choose)
+        case 1
+    switch(i)
+        case 1
+            I_exp = RTC(:,2)';
+        case 2 
+            I_exp = TNJ(:,2)';
+        case 3
+            I_exp = ZTJ(:,2)';
+         case 4
+            I_exp = G30C(:,2)';
+        case 5 
+            I_exp = PWP(:,2)';
+        case 6
+            I_exp = KC2(:,2)';
+        case 7
+            I_exp = SPV(:,2)';
+        case 8 
+            I_exp = PSC(:,2)';
+    end 
+        case 2
+            switch(i)
+        case 1
+            I_exp = SIP(:,2)';
+        case 2 
+            I_exp = CTJ30(:,2)';
+        case 3
+            I_exp = MLU(:,2)';
+            end
+    end 
+            
+     
+error_2D2R(i) =  RECT(I_modelo_2D2R(i,1:N),I_exp);
+RMSE_adim_2D2R(i) = RMSE_NonDim(I_modelo_2D2R(i,1:N),I_exp);
+[RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)] = error_PbPfun(I_modelo_2D2R(i,1:N),I_exp);
+    
+switch(choose)
+    case 1 
+    switch(i)
+        case 1
+            RTC_error_PbP_2D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
+        case 2 
+            TNJ_error_PbP_2D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
+        case 3
+            ZTJ_error_PbP_2D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
+         case 4
+            G30C_error_PbP_2D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
+        case 5
+            PWP_error_PbP_2D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
+        case 6
+            KC2_error_PbP_2D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
+        case 7
+            SPV_error_PbP_2D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
+        case 8 
+            PSC_error_PbP_2D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
+    end
+    case 2
+        switch(i)
+        case 1
+            SIP_error_PbP_2D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
+        case 2 
+            CTJ30_error_PbP_2D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
+        case 3
+            MLU_error_PbP_2D2R = [RMSE_PbP_Dim(:),RMSE_PbP_NonDim(:)];
+        end 
+end 
+
+        
+    clear RMSE_PbP_Dim
+    clear RMSE_PbP_NonDim
 end
 
 %PLOTS
@@ -457,6 +633,59 @@ for i = 1: size(dat,2)
 %         
 end
 
+
+%% Plot de errores 
+
+switch(choose)
+    case 1
+    figure()
+    axis tight
+    xlabel('{\it V} [V]')
+    ylabel('{\it | I-I_{exp} | / I_{sc}}');
+    box on
+    set(gca,'FontSize',18)
+    hold on
+    plot(G30C(:,1),G30C_error_PbP_1D2R(:,2), '-dk','LineWidth',2, 'MarkerSize', 12,'MarkerIndices',1:50:size(G30C,1))
+    plot(G30C(:,1),G30C_error_PbP_2D2R(:,2), '-ok','LineWidth',2, 'MarkerSize', 12,'MarkerIndices',1:50:size(G30C,1))
+    legend('Modelo 1D2R', 'Modelo 2D2R')
+    
+    
+    figure()
+    axis tight
+    xlabel('{\it V} [V]')
+    ylabel('{\it | I-I_{exp} | / I_{sc}}');
+    box on
+    set(gca,'FontSize',18)
+    hold on
+    plot(PSC(:,1),PSC_error_PbP_1D2R(:,2), '-dk','LineWidth',2, 'MarkerSize', 12,'MarkerIndices',1:2:size(PSC,1))
+    plot(PSC(:,1),PSC_error_PbP_2D2R(:,2), '-ok','LineWidth',2, 'MarkerSize', 12,'MarkerIndices',1:2:size(PSC,1))
+    legend('Modelo 1D2R', 'Modelo 2D2R')
+    
+    case 2
+            figure()
+    axis tight
+    xlabel('{\it V} [V]')
+    ylabel('{\it | I-I_{exp} | / I_{sc}}');
+    box on
+    set(gca,'FontSize',18)
+    hold on
+    plot(SIP(:,1),SIP_error_PbP_1D2R(:,2), '-dk','LineWidth',2, 'MarkerSize', 12,'MarkerIndices',1:2:size(SIP,1))
+    plot(SIP(:,1),SIP_error_PbP_2D2R(:,2), '-ok','LineWidth',2, 'MarkerSize', 12,'MarkerIndices',1:2:size(SIP,1))
+    legend('Modelo 1D2R', 'Modelo 2D2R')
+    
+    
+    figure()
+    axis tight
+    xlabel('{\it V} [V]')
+    ylabel('{\it | I-I_{exp} | / I_{sc}}');
+    box on
+    set(gca,'FontSize',18)
+    hold on
+    plot(MLU(:,1),MLU_error_PbP_1D2R(:,2), '-dk','LineWidth',1, 'MarkerSize', 8,'MarkerIndices',1:8:size(MLU,1))
+    plot(MLU(:,1),MLU_error_PbP_2D2R(:,2), '-ok','LineWidth',1, 'MarkerSize', 8,'MarkerIndices',1:8:size(MLU,1))
+    legend('Modelo 1D2R', 'Modelo 2D2R')
+end
+    
 %% Funciones
 
 %Calculo de parametros 1D2R
@@ -503,3 +732,4 @@ end
 % end
 
 
+    

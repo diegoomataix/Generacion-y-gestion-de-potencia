@@ -507,7 +507,7 @@ end       %_____________________________________________________________________
     figure()
     axis tight
     xlabel('{\it V} [V]')
-     ylabel('{\it | I-I_{exp} | / I_{sc}}');
+    ylabel('{\it | I-I_{exp} | / I_{sc}}');
     box on
     set(gca,'FontSize',18)
     hold on
