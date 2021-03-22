@@ -98,9 +98,7 @@ I_exp= data(:, 2);
 I_exp = I_exp';
 
 V_oc = max(V(:));
-Voc(j) = V_oc;
 I_sc = max(I_exp(:));
-Isc(j)=I_sc;
 
 Vt = n*k*T/q;        %Thermal Voltage
 
@@ -120,10 +118,10 @@ a2(j)=umin(7);
 %Calculo de inputs del modelo analitico
 
 Rsh_zero(j) = Rsh(j)-Rs(j);
-c(j) = (a2(j)-a1(j))*(I01(j)/(a1(j)*exp(-Voc(j)/(a1(j)*Vt))))*(Rsh_zero(j)-Rs(j));
+c(j) = (a2(j)-a1(j))*(I01(j)/(a1(j)*exp(-V_oc(j)/(a1(j)*Vt))))*(Rsh_zero(j)-Rs(j));
 d(j) = a2(j)*Vt;
-e(j) = Rsh_zero(j)*Isc(j)-Voc(j);
-Rs_zero(j) = ((c(j)+e(j))*Rs(j) +d(j)*Rsh_zero(j))/(c(j)+d(j)+e(j));
+e(j) = Rsh_zero(j)*I_sc(j)-V_oc(j);
+
 
 % plot results
 
