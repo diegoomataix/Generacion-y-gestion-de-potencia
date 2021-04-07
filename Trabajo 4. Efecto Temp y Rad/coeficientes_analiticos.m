@@ -2,7 +2,6 @@ clear all; clc; close all
 
 %% DATOS
 % Orden de los datos (FichaTecnica:FT) -> FT1BOL, FT1_2.5E14, FT1_2.5E14, FT1_2.5E14, Experimental
-% [ Isc, Imp, Vmp, Voc, betha, alpha]
 
 load('z.mat')
 dat_exp = z;
@@ -24,29 +23,28 @@ for i = 1: size(dat,2)
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-caso = 1;              %   1: Modelo explícito K&H         2: Modelo 1D2R
+caso = 2;              %   1: Modelo explícito K&H         2: Modelo 1D2R
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 switch(caso)
-    %% Modelo de Kalmalkar-Haneefa
+    %%% Modelo de Kalmalkar-Haneefa %%%
     case 1
-        %Ajuste mediante dos parametros gamma_k y m
-        % i = 1 - (1- gamma)* v - gamma * v^m
-        % i y v son la intensidad y el voltaje en forma adimensional.
         %%% Determine coefficients %%%
         [C, m_func, m, gamma, I_Kar] = KH_model(dat,V, dat(1,:), dat(4,:), dat(5,:), dat(6,:));
-        
         %%% PLOT %%%
         myplot(I_Kar, V, dat, dat_exp)
-        
-        %% Modelo 1D2R
+    %%% Modelo 1D2R %%%
     case 2
-        [Vt, I] = UND2R(dat, V, Isc,Voc,Imp,Vmp,n);
+        %%% Determine coefficients %%%
+        T  = [20, 20, 20, 20, 28] + 273.15;     % Temperatura nominal [K]
+        [Vt, I] = UND2R(dat, V, Isc,Voc,Imp,Vmp,n,T);
         %%% PLOT %%%
         myplot(I, V, dat, dat_exp)
 end
 
-%% Funciones
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Funciones %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [Ipv,I0,Rs,Rsh] = param_1D_2R_Lap(Isc,Voc,Imp,Vmp,a,Vt)
 
 A=-(2*Vmp-Voc)/(a*Vt)+(Vmp*Isc-Voc*Imp)/(Vmp*Isc+Voc*(Imp-Isc));
@@ -67,11 +65,10 @@ I0=((Rsh+Rs)/Rsh*Isc-Voc/Rsh)/(exp((Voc)/(a*Vt)));
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [Vt, I] = UND2R(dat, V, Isc,Voc,Imp,Vmp,n)
+function [Vt, I] = UND2R(dat, V, Isc,Voc,Imp,Vmp,n, T)
 k = 1.3806503e-23;   % Boltzmann [J/K]
 q = 1.60217646e-19;  % Carga electron [C]
 
-T  = [20, 20, 20, 20, 28] + 273.15;     % Temperatura nominal [K]
 Vt = n.*k.*T./q;                        % Voltaje termico
 a_n = 1.3;
 for i = 1:size(dat,2)
@@ -94,12 +91,12 @@ function [C, m_func, m, gamma, I_Kar] = KH_model(dat,V, Isc, Voc, betha, alpha)
 %[ Isc, Imp, Vmp, Voc, betha, alpha, k]
 %%% Determine coefficients %%%
 for i = 1:size(dat,2)
-    
+
     C(i) = (1- betha(1,i) - alpha(1,i))/ ((2*betha(1,i))-1);
     m_func(i) = lambertw(-1, ((alpha(1,i)* (C(i)^-1) * log(alpha(1,i)))/C(i)));   %
     m(i)= (m_func(i)/log(alpha(1,i))) + (C(i)^-1) + 1 ; % iterar para cada uno de los paneles
     gamma(i) = (2*betha(1,i) -1)/ ((alpha(1,i)^m(i) *(m(i)-1)));
-    
+
 end
 
 %%% I y V %%%
