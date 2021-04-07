@@ -2,27 +2,26 @@ clear all; clc; close all
 
 Datos_3G28C
 %% SIMULACION DE LA ACTITUD DEL SATELITE
-% La temperatura del panel varia entre -80 y -20 grados, estando su máximo
-% retrasado 15 s respecto al máximo de la radiación sobre el panel.
-[t, G, roll,roll_raw, roll_Tmax, T] = attitude(T_periodo, pasoT, omega,G_0, T_max, T_min); % [s], [deg], [deg], [K]
+[t, G, roll,roll_raw, roll_Tmax, T] = ...
+    attitude(T_periodo, pasoT, omega,G_0, T_max, T_min); % [s], [deg], [deg], [K]
 
 % figure();plot(t,roll_raw)
 % figure();hold on; plot(cos(roll_raw + roll_Tmax));plot(cos(roll_raw));hold off
 % figure();plot(G);
-
 %% EFECTO COND. AMBIENTALES
 for j = 1:size(G,2)
-for i = 1:size(dat,2)
-Isc_amb(i,j) = (G(j)/G_0) * (Isc(i) + alpha_Isc(i) * (T(j) - T_0(i)));
-Imp_amb(i,j) = (G(j)/G_0) * (Imp(i) + alpha_Imp(i) * (T(j) - T_0(i)));
-Voc_amb(i,j) = Voc(i) + a*Vt(i) * log(G(j)/G_0) + (alpha_Voc(i) * (T(j) - T_0(i)));
-Vmp_amb(i,j) = Vmp(i) + a*Vt(i) * log(G(j)/G_0) + (alpha_Vmp(i) * (T(j) - T_0(i)));
-end
+    for i = 1:size(dat,2)
+        %%% en algunos casos no tienen muy buena pinta los órdenes de
+        %%% magnitud
+        Isc_amb(i,j) = (G(j)/G_0) * (Isc(i) + alpha_Isc(i) * (T(j) - T_0(i)));
+        Imp_amb(i,j) = (G(j)/G_0) * (Imp(i) + alpha_Imp(i) * (T(j) - T_0(i)));
+        Voc_amb(i,j) = Voc(i) + a*Vt(i) * log(G(j)/G_0) + (alpha_Voc(i) * (T(j) - T_0(i)));
+        Vmp_amb(i,j) = Vmp(i) + a*Vt(i) * log(G(j)/G_0) + (alpha_Vmp(i) * (T(j) - T_0(i)));
+    end
 end
 %% CALCULO CON LAS 3 RESISTENCIAS
 R = [35, 37.2 , 42];           % Ohm
 % V = IR
-
 %% MODELOS DEL PANEL
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 caso = 1;              %   1: Modelo explícito K&H         2: Modelo 1D2R
@@ -32,26 +31,34 @@ switch(caso)
     case 1
         %%% Determine coefficients %%%
         syms I_Kar_sym
-        for k = 1:size(G,2)
-%             if G(k) <=0
-                        
-            for j = 1:size(dat,2)
-                    [C, m_func, m, gamma] = KH_model((Imp_amb(j,k)/Isc_amb(j,k)), (Vmp_amb(j,k)/Voc_amb(j,k)));
-                for i = 1:size(R)
-                    I_Kar2(j,i,k) = double( vpasolve( I_Kar_sym == Isc_amb(j,k) * ( 1 - (1- gamma)*(I_Kar_sym*R(i)/Voc_amb(j,k)) - gamma* ( (I_Kar_sym*R(i)/Voc_amb(j,k))^m )) ) );
+        % Inicializar vectores
+        for k = 1:size(G,2)             % Size Irradiance vector
+            for j = 1:size(dat,2)       % Size Data vector
+                [C(j,k), m_func(j,k), m(j,k), gamma(j,k)] =...
+                    KH_model((Imp_amb(j,k)/Isc_amb(j,k)), (Vmp_amb(j,k)/Voc_amb(j,k)));
+                
+                for i = 1:size(R,2)     % Size Resistance vector
+                    % Parece que salen bien los primeros términos (del
+                    % orden de 0.4 [A]), pero se para en i = 3, j = 5m, k=1
+                    % Puede ser por los puntos donde G es 0?? (bueno 1e-12)
+                    
+                    % I_Kar(Irradiancia,CasoPanel,Resist)
+                    I_Kar2(k,j,i) = double( vpasolve( I_Kar_sym == ...
+                        Isc_amb(j,k) * ( 1 - (1- gamma(j,k))*(I_Kar_sym*R(i)/Voc_amb(j,k)) ...
+                        - gamma(j,k)* ( (I_Kar_sym*R(i)/Voc_amb(j,k))^m(j,k) )), I_Kar_sym ) );
                 end
             end
         end
         %%% PLOT %%%
-         myplot(I_Kar2, V, dat, dat_exp)
-    %%% Modelo 1D2R %%%
+        % myplot(I_Kar2, I_Kar2*R, dat, dat_exp)
+        %%% Modelo 1D2R %%%
     case 2
         %%% Determine coefficients %%%
         [Vt, I] = UND2R(dat, V, Isc,Voc,Imp,Vmp,n,T);
         %%% PLOT %%%
-%         myplot(I, V, dat, dat_exp)
-end
+        %         myplot(I, V, dat, dat_exp)
 
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Funciones %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -102,11 +109,11 @@ function [C, m_func, m, gamma] = KH_model(betha, alpha)
 %%% Determine coefficients %%%
 
 % for i = 1:size(dat,2)
-    C = (1- betha - alpha)/ ((2*betha)-1);
-    m_func = lambertw(-1, (-(alpha^ (-1/C) * log(alpha))/C));   %
-    m= (m_func/log(alpha)) + (C^-1) + 1 ; % iterar para cada uno de los paneles
-    gamma = (2*betha -1)/ ((alpha^m *(m-1)));
-    
+C = (1- betha - alpha)/ ((2*betha)-1);
+m_func = lambertw(-1, (-(alpha^ (-1/C) * log(alpha))/C));   %
+m= (m_func/log(alpha)) + (C^-1) + 1 ; % iterar para cada uno de los paneles
+gamma = (2*betha -1)/ ((alpha^m *(m-1)));
+
 %%% I y V %%%
 % I_Kar = zeros(size(dat,2),size(V,2));
 % for i = 1:size(dat,2)
@@ -118,19 +125,19 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [t, G, roll, roll_raw, roll_Tmax, T] = attitude(T_periodo, pasoT, omega, G_0,T_max, T_min) % [s], [deg], [deg], [K]
 
-    t = linspace(0,T_periodo,pasoT); % [s]
-    % ANGULO INDICENCIA SOLAR
-    roll_raw = t * omega;            % [rad]
-    roll = wrapTo2Pi(roll_raw);      % [rad] 
-    roll = rad2deg(roll);            % [deg]
-    roll_Tmax = (15 * omega);        % [rad] roll angle for 15s T delay
-    G = G_0 * cos(roll_raw);
-    T = ((T_max-T_min)/2) * cos(roll_raw + roll_Tmax)+T_min;
-    for i = 1:size(G,2)
+t = linspace(0,T_periodo,pasoT); % [s]
+% ANGULO INDICENCIA SOLAR
+roll_raw = t * omega;            % [rad]
+roll = wrapTo2Pi(roll_raw);      % [rad]
+roll = rad2deg(roll);            % [deg]
+roll_Tmax = (15 * omega);        % [rad] roll angle for 15s T delay
+G = G_0 * cos(roll_raw);
+T = ((T_max-T_min)/2) * cos(roll_raw + roll_Tmax)+T_min;
+for i = 1:size(G,2)
     if G(i) <= G_0*cosd(75)
-        G(i) = 0;
+        G(i) = 1e-12;
     end
-    end
+end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function myplot(I, V, dat, dat_exp)
