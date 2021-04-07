@@ -11,7 +11,7 @@ Imp = [0.478, 0.4821, 0.4724, 0.4578, 0.4783];   %[A]
 Isc = [0.506, 0.5009, 0.5009, 0.4858, 0.502925]; %[A]
 Voc = [2.667, 2.560, 2.534, 2.480, 19.0442];     %[V]
 Vmp = [2.371, 2.276, 2.229, 2.205, 17.3681];     %[V]
-n     = round(Voc(5)/Voc(1));
+n     = Voc(5)/Voc(1);
 Vmp(1:4) = n*Vmp(1:4);
 Voc(1:4) = n*Voc(1:4);
 alpha =  Vmp./Voc;
@@ -96,7 +96,7 @@ function [C, m_func, m, gamma, I_Kar] = KH_model(dat,V, Isc, Voc, betha, alpha)
 for i = 1:size(dat,2)
     
     C(i) = (1- betha(1,i) - alpha(1,i))/ ((2*betha(1,i))-1);
-    m_func(i) = lambertw(-1, ((alpha(1,i)* (C(i)^-1) * log(alpha(1,i)))/C(i)));   %
+    m_func(i) = lambertw(-1, (-(alpha(1,i)^ (-1/C(i)) * log(alpha(1,i)))/C(i)));   %
     m(i)= (m_func(i)/log(alpha(1,i))) + (C(i)^-1) + 1 ; % iterar para cada uno de los paneles
     gamma(i) = (2*betha(1,i) -1)/ ((alpha(1,i)^m(i) *(m(i)-1)));
     

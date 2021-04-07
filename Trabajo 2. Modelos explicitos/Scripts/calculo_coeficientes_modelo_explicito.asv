@@ -190,7 +190,7 @@ switch(model)
 
             C(i) = (1- dat(5,i) - dat(6,i))/ ((2*dat(5,i))-1);
 
-            m_func(i) = lambertw(-1, (-(dat(6,i)^ (-C(i)^-1) * log(dat(6,i)))/C(i)));   %
+            m_func(i) = lambertw(-1, ((dat(6,i)* (C(i)^-1) * log(dat(6,i)))/C(i)));   %
             m(i)= (m_func(i)/log(dat(6,i))) + (C(i)^-1) + 1 ; % iterar para cada uno de los paneles
 
             gamma(i) = (2*dat(5,i) -1)/ ((dat(6,i)^m(i) *(m(i)-1)));
@@ -198,6 +198,9 @@ switch(model)
             m_simp (i) = (log(1-dat(5,i))/log(dat(6,i)));
 
         end
+
+        m(1) = 0.995576;
+        u(1) = 10.03258;
         
         %%% I y V %%%
         I_Kar = zeros(size(dat,2),size(V,2));
