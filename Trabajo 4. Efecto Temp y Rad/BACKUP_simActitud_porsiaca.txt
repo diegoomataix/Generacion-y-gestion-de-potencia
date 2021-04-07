@@ -1,0 +1,17 @@
+    roll_raw = t * omega;            % [rad]
+    roll = wrapTo2Pi(roll_raw);      % [rad] 
+    roll = rad2deg(roll);            % [deg]
+    % roll es la actitud en grados
+    % TEMPERATURA
+    roll_Tmax = rad2deg(15 * omega); % [deg] roll angle for 15s T delay
+    T = ones(1,size(roll,2));
+    % from roll = 0 to roll=roll_Tmax: y = 2.2376020x - 20.0000000
+    % from roll = roll_Tmax to roll=360: y = -0.3171489x + 94.1736067
+    for i = 1:size(roll,2)
+    if roll(i) <= roll_Tmax
+        T(i) = 2.2376020*(roll(i)) - 20;
+    else
+        T(i) = -0.3171489*(roll(i)) + 94.1736067;
+    end
+    end
+    % La t
