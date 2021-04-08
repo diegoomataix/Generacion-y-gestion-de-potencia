@@ -31,6 +31,8 @@ switch(caso)
     case 1
         %%% Determine coefficients %%%
         [C, m_func, m, gamma, I_Kar] = KH_model(dat,V, dat(1,:), dat(4,:), dat(5,:), dat(6,:));
+        I_Kar = real(I_Kar);
+        I_result = I_Kar(5,:)';
         %%% PLOT %%%
         myplot(I_Kar, V, dat, dat_exp)
     %%% Modelo 1D2R %%%
@@ -38,10 +40,21 @@ switch(caso)
         %%% Determine coefficients %%%
         T  = [20, 20, 20, 20, 28] + 273.15;     % Temperatura nominal [K]
         [Vt, I] = UND2R(dat, V, Isc,Voc,Imp,Vmp,n,T);
+        I_result = I(5,:)';
         %%% PLOT %%%
         myplot(I, V, dat, dat_exp)
 end
 
+
+%%%%%% CALCULO DE ERRORES %%%%%%%%%
+[RMSE_PbP_Dim,RMSE_PbP_NonDim] = error_PbPfun(I_result, dat_exp(:,2));
+RMSE_dim = RMSE(I_result, dat_exp(:,2));
+RMSE_aDim = RMSE_NonDim(I_result, dat_exp(:,2));
+
+plot_fun(dat_exp(:,1),RMSE_PbP_NonDim,'{\it V} [V]' ,'{\it \xi}',' ')
+
+
+%% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Funciones %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -128,3 +141,40 @@ for i = 1: size(dat,2)
     hold off
 end
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function plot_fun(axisx,axisy,labelx,labely,yourtitle)
+figure()
+
+axis tight
+% axis([min(axisx) max(axisx)  min(axisy) max(axisy)])
+xlabel(labelx)
+ylabel(labely)
+title(yourtitle)
+box on
+set(gca,'FontSize',18)
+grid on
+grid minor
+hold on
+plot_result = plot(axisx,axisy,'-k','LineWidth',2);
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% FORMULAS ERRORES 
+
+function [RMSE_PbP_Dim,RMSE_PbP_NonDim] = error_PbPfun(I_modelo, I_exp)
+I_sc = max(I_exp);
+    RMSE_PbP_Dim(:) = abs(I_modelo(:) - I_exp(:));
+    RMSE_PbP_NonDim(:) = (1/I_sc)*abs(I_modelo(:) - I_exp(:));
+end 
+
+function RMSE_dim = RMSE(I_modelo, I_exp)
+
+RMSE_dim = ((sum((I_modelo - I_exp).^2)/size(I_exp,1))^0.5);
+end 
+
+function RMSE_adim = RMSE_NonDim(I_modelo, I_exp)
+ 
+I_sc = max(I_exp);
+
+RMSE_adim = (1/I_sc)*((sum((I_modelo - I_exp).^2)/size(I_exp,1))^0.5); %/sum(I_exp);
+end 
