@@ -12,7 +12,7 @@ load('Voc_amb.mat')
 load('Temp')
 load('G')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-pintar = 2;         %   1: Pintar efecto T        2: Pintar efecto G
+pintar = 1;         %   1: Pintar efecto T        2: Pintar efecto G
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 switch(pintar)
     case 1
@@ -26,6 +26,7 @@ switch(pintar)
         alpha =  Vmp./Voc;
         beta  =  Imp./Isc;
         dat   = [Isc;Imp;Vmp;Voc;beta;alpha];
+        factor_axis = 1.2;
         
     case 2
         Temp = 11;
@@ -39,15 +40,17 @@ switch(pintar)
         alpha =  Vmp./Voc;
         beta  =  Imp./Isc;
         dat   = [Isc;Imp;Vmp;Voc;beta;alpha];
-        
-        V = zeros(size(dat,2),200);     % Inicializar Voltaje
-        for i = 1: size(dat,2)
-            V(i,:) = linspace(0,dat(4,i),200);
-        end
+        factor_axis = 2;
 end
 
+V = zeros(size(dat,2),200);     % Inicializar Voltaje
+for i = 1: size(dat,2)
+    V(i,:) = linspace(0,dat(4,i)*2,200);
+end
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-caso = 2;              %   1: Modelo explícito K&H         2: Modelo 1D2R
+caso = 1;              %   1: Modelo explícito K&H         2: Modelo 1D2R
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 switch(caso)
@@ -56,14 +59,14 @@ switch(caso)
         %%% Determine coefficients %%%
         [C, m_func, m, gamma, I_Kar] = KH_model(dat,V, dat(1,:), dat(4,:), dat(5,:), dat(6,:));
         %%% PLOT %%%
-        myplot(I_Kar, V, dat, dat_exp)
-    %%% Modelo 1D2R %%%
+        myplot(I_Kar, V, dat, dat_exp,factor_axis)
+        %%% Modelo 1D2R %%%
     case 2
         %%% Determine coefficients %%%
         T_0  = [20, 20, 20, 20, 28] + 273.15;     % Temperatura nominal [K]
         [Vt, I] = UND2R(dat, V, Isc,Voc,Imp,Vmp,n,T_0);
         %%% PLOT %%%
-        myplot(I, V, dat, dat_exp)
+        myplot(I, V, dat, dat_exp,factor_axis)
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -116,12 +119,12 @@ function [C, m_func, m, gamma, I_Kar] = KH_model(dat,V, Isc, Voc, betha, alpha)
 %[ Isc, Imp, Vmp, Voc, betha, alpha, k]
 %%% Determine coefficients %%%
 for i = 1:size(dat,2)
-
+    
     C(i) = (1- betha(1,i) - alpha(1,i))/ ((2*betha(1,i))-1);
     m_func(i) = lambertw(-1, (-(alpha(1,i)^ (-1/C(i)) * log(alpha(1,i)))/C(i)));   %
     m(i)= (m_func(i)/log(alpha(1,i))) + (C(i)^-1) + 1 ; % iterar para cada uno de los paneles
     gamma(i) = (2*betha(1,i) -1)/ ((alpha(1,i)^m(i) *(m(i)-1)));
-
+    
 end
 
 %%% I y V %%%
@@ -133,10 +136,10 @@ for i = 1:size(dat,2)
 end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function myplot(I, V, dat, dat_exp)
-    figure()
-    plot(dat_exp(:,1), dat_exp(:,2), '--k')
-    legend({'1','2','3','4','5'},'Location','northeast','NumColumns',2)
+function myplot(I, V, dat, dat_exp,factor_axis)
+figure()
+plot(dat_exp(:,1), dat_exp(:,2), '--k')
+legend({'1','2','3','4','5'},'Location','northeast','NumColumns',2)
 for i = 1: size(dat,2)
     % Plot I-V
     hold on
@@ -144,7 +147,7 @@ for i = 1: size(dat,2)
     box on
     plot(  V(i,:) , I(i,:),'LineWidth',1)
     axis tight
-    axis([0 dat(4,i)*1.2 0 dat(1,i)*2])
+    axis([0 dat(4,i)*1.2 0 dat(1,i)*factor_axis])
     xlabel('{\it V} [V]')
     ylabel('{\it I} [A]');
     box on
