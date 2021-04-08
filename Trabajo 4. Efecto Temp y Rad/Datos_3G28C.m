@@ -43,8 +43,8 @@ mu_T = 5.986e14;                                  % [m^3/s^2]
 G_0 = 1360;                                       % [W/m2]
 % PARAMETROS ORBITALES
 % Órbita  
-a = h + RT;                                       % [m]
-T_periodo = (2*pi*sqrt(a.^3/mu_T));               % [s]
+aa = h + RT;                                       % [m]
+T_periodo = (2*pi*sqrt(aa.^3/mu_T))/10;            % [s]
 pasoT = 1e2;                                      % paso temporal
 T_max = 80+273.15;                                % [K]
 T_min = -20+273.15;                               % [K]
