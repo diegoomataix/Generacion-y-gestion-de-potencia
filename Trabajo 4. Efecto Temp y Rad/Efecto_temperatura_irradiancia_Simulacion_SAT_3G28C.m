@@ -9,59 +9,19 @@ figure();plot(t,roll_raw)
 figure();hold on; plot(cos(roll_raw - roll_Tmax));plot(cos(roll_raw));plot(G/G_0);legend('1','2','3');hold off
 figure();plot(G);
 %% EFECTO COND. AMBIENTALES
-for j = 1:size(G,2)
-    for i = 1:size(dat,2)
-        %%% en algunos casos no tienen muy buena pinta los órdenes de
-        %%% magnitud
-        Isc_amb(i,j) = (G(j)/G_0) * (Isc(i) + alpha_Isc(i) * (T(j) - T_0(i)));
-        Imp_amb(i,j) = (G(j)/G_0) * (Imp(i) + alpha_Imp(i) * (T(j) - T_0(i)));
-        Voc_amb(i,j) = Voc(i) + a(i)*Vt(i) * log(G(j)/G_0) + (alpha_Voc(i) * (T(j) - T_0(i)));
-        Vmp_amb(i,j) = Vmp(i) + a(i)*Vt(i) * log(G(j)/G_0) + (alpha_Vmp(i) * (T(j) - T_0(i)));
+for k = 1:size(T,2)
+    for j = 1:size(G,2)
+        for i = 1:size(dat,2)
+            %%% en algunos casos no tienen muy buena pinta los órdenes de
+            %%% magnitud
+            Isc_amb(i,j,k) = (G(j)/G_0) * (Isc(i) + alpha_Isc(i) * (T(k) - T_0(i)));
+            Imp_amb(i,j,k) = (G(j)/G_0) * (Imp(i) + alpha_Imp(i) * (T(k) - T_0(i)));
+            Voc_amb(i,j,k) = Voc(i) + a(i)*Vt(i) * log(G(j)/G_0) + (alpha_Voc(i) * (T(k) - T_0(i)));
+            Vmp_amb(i,j,k) = Vmp(i) + a(i)*Vt(i) * log(G(j)/G_0) + (alpha_Vmp(i) * (T(k) - T_0(i)));
+        end
     end
 end
-%% CALCULO CON LAS 3 RESISTENCIAS
-R = [35, 37.2 , 42];           % Ohm
-% V = IR
-%% MODELOS DEL PANEL
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-caso = 1;              %   1: Modelo explícito K&H         2: Modelo 1D2R
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-switch(caso)
-    %%% Modelo de Kalmalkar-Haneefa %%%
-    case 1
-        %%% Determine coefficients %%%
-        syms I_Kar_sym
-        % Inicializar vectores
-        for k = 1:size(G,2)             % Size Irradiance vector
-            for j = 1:size(dat,2)       % Size Data vector
-                alpha_amb(j,k) = (Vmp_amb(j,k)/Voc_amb(j,k));
-                betha_amb(j,k) = (Imp_amb(j,k)/Isc_amb(j,k));
-                [C(j,k), m_func(j,k), m(j,k), gamma(j,k)] =...
-                    KH_model( betha_amb(j,k), alpha_amb(j,k) );
 
-                for i = 1:size(R,2)     % Size Resistance vector
-                    % I_Kar(Irradiancia,CasoPanel,Resist)
-                    I_Kar2(k,j,i) = double( vpasolve( I_Kar_sym == ...
-                        Isc_amb(j,k) * ( 1 - (1- gamma(j,k))*(I_Kar_sym*R(i)/Voc_amb(j,k)) ...
-                        - gamma(j,k)* ( (I_Kar_sym*R(i)/Voc_amb(j,k))^m(j,k) )), I_Kar_sym ) );
-                end
-            end
-        end   
-        %%% PLOT %%%
-        figure()
-        plot(t, I_Kar2(:,3,3))
-        %%% Modelo 1D2R %%%
-    case 2
-        %%% Determine coefficients %%%
-        [Vt, I] = UND2R(dat, ~, Isc,Voc,Imp,Vmp,n,T);
-        
-        I(i,j) = (Rsh(i)*(Ipv(i) + I0(i)) - V(i,j))/(Rs(i) + Rsh(i)) - ((a(i)*Vt(i))/Rs(i))*...
-             lambertw(0,(((Rs(i)*Rsh(i)*I0(i))/((a(i)*Vt(i))*(Rs(i) + Rsh(i))))*exp((Rsh(i)*...
-             (Rs(i)*Ipv(i) + Rs(i)*I0(i) + V(i,j)))/(a(i)*Vt(i)*(Rs(i) + Rsh(i))))));
-        %%% PLOT %%%
-        %         myplot(I, V, dat, dat_exp)
-
-end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Funciones %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -85,16 +45,15 @@ I0=((Rsh+Rs)/Rsh*Isc-Voc/Rsh)/(exp((Voc)/(a*Vt)));
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [Vt, I] = UND2R(dat, V, Isc,Voc,Imp,Vmp,n, T)
+function [Ipv, I0, Rs, Rsh] = UND2R(Isc,Voc,Imp,Vmp,n, T)
 k = 1.3806503e-23;   % Boltzmann [J/K]
 q = 1.60217646e-19;  % Carga electron [C]
 
 Vt = n.*k.*T./q;     % Voltaje termico
 a_n = 1.3;
-for i = 1:size(dat,2)
-    a(i) = a_n;
-    [Ipv(i),I0(i),Rs(i),Rsh(i)] = param_1D_2R_Lap(Isc(i),Voc(i),Imp(i),Vmp(i),a(i),Vt(i));
-end
+a = a_n;
+[Ipv,I0,Rs,Rsh] = param_1D_2R_Lap(Isc,Voc,Imp,Vmp,a,Vt);
+
 
 % Calculo I-V mediante funcion de Lambert W
 % for i = 1:size(dat,2)     % bucle para los distintos casos
