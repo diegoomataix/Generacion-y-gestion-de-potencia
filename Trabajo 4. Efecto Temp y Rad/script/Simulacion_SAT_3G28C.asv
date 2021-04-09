@@ -172,11 +172,9 @@ for i = 1:size(roll,2)
         disp('a')
         roll_aux = roll(i)-roll_Tmax;
         T(i) = a2*(deg2rad(roll_aux)/omega)^2+b2*(deg2rad(roll_aux)/omega)+c2;
-    elseif roll(i) > roll_Tmax && roll(i) < 285
+    elseif roll(i) > roll_Tmax 
         roll_aux = roll(i)-285;
         T(i) = a1*(deg2rad(roll_aux)/omega)^2+b1*(deg2rad(roll_aux)/omega)+c1;
-    else 
-        disp('me comes los huevos')
     end
 end
 
