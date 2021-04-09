@@ -31,59 +31,59 @@ R = [35, 37.2 , 42];           % Ohm
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 caso = 1;              %   1: Modelo explícito K&H         2: Modelo 1D2R
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% switch(caso)
-%     %%% Modelo de Kalmalkar-Haneefa %%%
-%     case 1
-%         %%% Determine coefficients %%%
-%         syms I_Kar_sym
-%         % Inicializar vectores
-%         for k = 1:size(G,2)             % Size Irradiance vector
-%             for j = 1:size(dat,2)       % Size Data vector
-%                 alpha_amb(j,k) = (Vmp_amb(j,k)/Voc_amb(j,k));
-%                 betha_amb(j,k) = (Imp_amb(j,k)/Isc_amb(j,k));
-%                 [C(j,k), m_func(j,k), m(j,k), gamma(j,k)] =...
-%                     KH_model( betha_amb(j,k), alpha_amb(j,k) );
-%                 
-%                 for i = 1:size(R,2)     % Size Resistance vector
-%                     % I_Kar(Irradiancia,CasoPanel,Resist)
-%                     I_Kar2(k,j,i) = double( vpasolve( I_Kar_sym == ...
-%                         Isc_amb(j,k) * ( 1 - (1- gamma(j,k))*(I_Kar_sym*R(i)/Voc_amb(j,k)) ...
-%                         - gamma(j,k)* ( (I_Kar_sym*R(i)/Voc_amb(j,k))^m(j,k) )), I_Kar_sym ) );
-%                 end
-%             end
-%         end
-%         %%% PLOT %%%
-%         figure()
-%         plot(t, I_Kar2(:,3,3))
-%         
-%         %%%%%%%%%%%%% Modelo 1D2R %%%%%%%%%%%%%%%%%
-%     case 2
-%         %%% Determine coefficients %%%
-%         syms I_sym
-%         for k = 1:size(G,2)             % Size Irradiance vector
-%             for j = 1:size(dat,2)       % Size Data vector
-%                 [Ipv(j,k), I0(j,k), Rs(j,k), Rsh(j,k)] = ...
-%                     UND2R(Isc_amb(j,k),Voc_amb(j,k),Imp_amb(j,k),Vmp_amb(j,k),n, T_0(j));
-%                 
-%                 for i = 1:size(R,2)     % Size Resistance vector
-%                     I(k,j,i) = double( vpasolve( I_sym ==(Rsh(j,k)*(Ipv(j,k) ...
-%                         + I0(j,k)) - I_sym*R(i))/(Rs(j,k) + Rsh(j,k))...
-%                         - ((a(j)*Vt(j))/Rs(j,k))*...
-%                         lambertw(0,(((Rs(j,k)*Rsh(j,k)*...
-%                         I0(j,k))/((a(j)*Vt(j))*(Rs(j,k) + Rsh(j,k))))*exp((Rsh(j,k)*...
-%                         (Rs(j,k)*Ipv(j,k) + Rs(j,k)*I0(j,k) + I_sym*R(i)))/(a(j)*Vt(j)*...
-%                         (Rs(j,k) + Rsh(j,k)))))),I_sym ) );
-%                 end
-%             end
-%         end
-%         
-%         %%% PLOT %%%
-%         for i = 1:3
-%             figure()
-%             plot(t, I(:,3,i))
-%         end
-%         
-% end
+switch(caso)
+    %%% Modelo de Kalmalkar-Haneefa %%%
+    case 1
+        %%% Determine coefficients %%%
+        syms I_Kar_sym
+        % Inicializar vectores
+        for k = 1:size(G,2)             % Size Irradiance vector
+            for j = 1:size(dat,2)       % Size Data vector
+                alpha_amb(j,k) = (Vmp_amb(j,k)/Voc_amb(j,k));
+                betha_amb(j,k) = (Imp_amb(j,k)/Isc_amb(j,k));
+                [C(j,k), m_func(j,k), m(j,k), gamma(j,k)] =...
+                    KH_model( betha_amb(j,k), alpha_amb(j,k) );
+                
+                for i = 1:size(R,2)     % Size Resistance vector
+                    % I_Kar(Irradiancia,CasoPanel,Resist)
+                    I_Kar2(k,j,i) = double( vpasolve( I_Kar_sym == ...
+                        Isc_amb(j,k) * ( 1 - (1- gamma(j,k))*(I_Kar_sym*R(i)/Voc_amb(j,k)) ...
+                        - gamma(j,k)* ( (I_Kar_sym*R(i)/Voc_amb(j,k))^m(j,k) )), I_Kar_sym ) );
+                end
+            end
+        end
+        %%% PLOT %%%
+        figure()
+        plot(t, I_Kar2(:,3,3))
+        
+        %%%%%%%%%%%%% Modelo 1D2R %%%%%%%%%%%%%%%%%
+    case 2
+        %%% Determine coefficients %%%
+        syms I_sym
+        for k = 1:size(G,2)             % Size Irradiance vector
+            for j = 1:size(dat,2)       % Size Data vector
+                [Ipv(j,k), I0(j,k), Rs(j,k), Rsh(j,k)] = ...
+                    UND2R(Isc_amb(j,k),Voc_amb(j,k),Imp_amb(j,k),Vmp_amb(j,k),n, T_0(j));
+                
+                for i = 1:size(R,2)     % Size Resistance vector
+                    I(k,j,i) = double( vpasolve( I_sym ==(Rsh(j,k)*(Ipv(j,k) ...
+                        + I0(j,k)) - I_sym*R(i))/(Rs(j,k) + Rsh(j,k))...
+                        - ((a(j)*Vt(j))/Rs(j,k))*...
+                        lambertw(0,(((Rs(j,k)*Rsh(j,k)*...
+                        I0(j,k))/((a(j)*Vt(j))*(Rs(j,k) + Rsh(j,k))))*exp((Rsh(j,k)*...
+                        (Rs(j,k)*Ipv(j,k) + Rs(j,k)*I0(j,k) + I_sym*R(i)))/(a(j)*Vt(j)*...
+                        (Rs(j,k) + Rsh(j,k)))))),I_sym ) );
+                end
+            end
+        end
+        
+        %%% PLOT %%%
+        for i = 1:3
+            figure()
+            plot(t, I(:,3,i))
+        end
+        
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Funciones %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -158,27 +158,7 @@ roll = wrapTo2Pi(roll_raw);      % [rad]
 roll = rad2deg(roll);            % [deg]
 roll_Tmax = (15 * omega);        % [rad] roll angle for 15s T delay
 G = G_0 * cos(roll_raw);
-% T = ((T_max-T_min)/2) * cos(roll_raw -roll_Tmax) +T_min+((T_max-T_min)/2);
-
-a1 = -100/(80.65^2);
-b1 = 0;
-c1 = 353.15;
-a2 = -100/(35.346^2);
-b2 = 0;
-c2 = 353.15;
-
-for i = 1:size(roll,2)
-    if roll(i) <= roll_Tmax || roll(i) >= 285
-        disp('a')
-        roll_aux = roll(i)-roll_Tmax;
-        T(i) = a2*(deg2rad(roll_aux)/omega)^2+b2*(deg2rad(roll_aux)/omega)+c2;
-    elseif roll(i) > roll_Tmax && roll(i) < 285
-        roll_aux = roll(i)-285;
-        T(i) = a1*(deg2rad(roll_aux)/omega)^2+b1*(deg2rad(roll_aux)/omega)+c1;
-    else 
-        disp('me comes los huevos')
-    end
-end
+T = ((T_max-T_min)/2) * cos(roll_raw -roll_Tmax) +T_min+((T_max-T_min)/2);
 
 for i = 1:size(G,2)
     if roll(i) >= 75 && roll(i) <= 285
