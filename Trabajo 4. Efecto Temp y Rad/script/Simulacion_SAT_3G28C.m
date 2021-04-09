@@ -58,7 +58,7 @@ switch(caso)
         hold on
         grid on
         plot(t, I_Kar2(:,5,1), 'k', 'Linewidth',1)
-        plot(t, I_Kar2(:,5,2), '-k', 'Linewidth',1)
+        plot(t, I_Kar2(:,5,2), '--k', 'Linewidth',1)
         plot(t, I_Kar2(:,5,3), '-.k', 'Linewidth',1)
         axis tight
         ylabel('{\it I} [V]')
@@ -97,7 +97,7 @@ switch(caso)
         hold on
         grid on
         plot(t, I(:,5,1), 'k', 'Linewidth',1)
-        plot(t, I(:,5,2), '-k', 'Linewidth',1)
+        plot(t, I(:,5,2), '--k', 'Linewidth',1)
         plot(t, I(:,5,3), '-.k', 'Linewidth',1)
         axis tight
         ylabel('{\it I} [V]')
