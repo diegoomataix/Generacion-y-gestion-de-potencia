@@ -5,11 +5,14 @@ Datos_3G28C
 [t, G, roll,roll_raw, roll_Tmax, T] = ...
     attitude(T_periodo, pasoT, omega,G_0, T_max, T_min); % [s], [deg], [deg], [K]
 
+% figure();plot(t,roll_raw)
+% figure();hold on; plot(cos(t));plot(cos(roll_raw));plot(G/G_0);legend('1','2','3');hold off
 figure();hold on;plot(t,G,'k', 'Linewidth',1);grid on;axis tight;ylabel('{\it G} [W/m^2]');xlabel('{\it t} [s]');box on;set(gca,'FontSize',18)
-%         legend('{\it G} [W/m^2]'); hold off
+        legend('{\it G} [W/m^2]'); hold off
 
-figure();hold on;plot(t,T,'-k', 'Linewidth',1);grid on;axis tight;ylabel('{\it T} [K]');xlabel('{\it t} [s]');box on;set(gca,'FontSize',18)
-%         legend('{\it T} [K]'); hold off
+figure();hold on;plot(t,T,'--k', 'Linewidth',1);grid on;axis tight;ylabel('{\it T} [V]');xlabel('{\it t} [s]');box on;set(gca,'FontSize',18)
+        legend('{\it T} [K]'); hold off
+% figure() ;plot(t,T)
 %% EFECTO COND. AMBIENTALES
 % Determinar a_n y voltaje termico
 k = 1.3806503e-23;                                % Boltzmann [J/K]
