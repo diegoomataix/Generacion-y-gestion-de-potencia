@@ -12,7 +12,7 @@ load('Voc_amb.mat')
 load('Temp')
 load('G')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-pintar = 1;         %   1: Pintar efecto T        2: Pintar efecto G
+pintar = 2;         %   1: Pintar efecto T        2: Pintar efecto G
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 switch(pintar)
     case 1
@@ -59,14 +59,56 @@ switch(caso)
         %%% Determine coefficients %%%
         [C, m_func, m, gamma, I_Kar] = KH_model(dat,V, dat(1,:), dat(4,:), dat(5,:), dat(6,:));
         %%% PLOT %%%
-        myplot(I_Kar, V, dat, dat_exp,factor_axis)
+        %         myplot(I_Kar, V, dat, dat_exp,factor_axis)
+        
+        % Plot I-V efecto T y efecto G -- DEJAR TAL CUAL PARA EFECTO T.
+        % DESCOMENTAR PLOTS 2 Y 3 Y LEGEND PARA EFECTO G
+        figure()
+        hold on
+        grid on
+        box on
+        plot(  V(1,:) , I_Kar(1,:),'-k','LineWidth',1.2)
+%             plot(  V(2,:) , I_Kar(2,:),':k','LineWidth',1.2)
+%             plot(  V(3,:) , I_Kar(3,:),'k','LineWidth',1.2)
+        plot(  V(4,:) , I_Kar(4,:),'--k','LineWidth',1.2)
+        plot(  V(5,:) , I_Kar(5,:),'-.k','LineWidth',1.2)
+        axis tight
+        axis([0 dat(4,i)*1.2 0 dat(1,i)*factor_axis])
+        legend({'T_{max}','T_{nom}','T_{min}'},'Location','northeast','NumColumns',2)
+%         legend({'G_{max}','G_2','G_3','G_4','G_5'},'Location','northeast','NumColumns',2)
+        xlabel('{\it V} [V]')
+        ylabel('{\it I} [A]');
+        box on
+        set(gca,'FontSize',18)
+        
+        
         %%% Modelo 1D2R %%%
     case 2
         %%% Determine coefficients %%%
         T_0  = [20, 20, 20, 20, 28] + 273.15;     % Temperatura nominal [K]
         [Vt, I] = UND2R(dat, V, Isc,Voc,Imp,Vmp,n,T_0);
         %%% PLOT %%%
-        myplot(I, V, dat, dat_exp,factor_axis)
+        %         myplot(I, V, dat, dat_exp,factor_axis)
+        % Plot I-V efecto T y efecto G -- DEJAR TAL CUAL PARA EFECTO T.
+        % DESCOMENTAR PLOTS 2 Y 3 Y LEGEND PARA EFECTO G
+        
+        figure()
+        hold on
+        grid on
+        box on
+        plot(  V(1,:) , I(1,:),'-k','LineWidth',1.2)
+        %     plot(  V(2,:) , I(2,:),':k','LineWidth',1.2)
+        %     plot(  V(3,:) , I(3,:),'k','LineWidth',1.2)
+        plot(  V(4,:) , I(4,:),'--k','LineWidth',1.2)
+        plot(  V(5,:) , I(5,:),'-.k','LineWidth',1.2)
+        axis tight
+        axis([0 dat(4,i)*1.2 0 dat(1,i)*factor_axis])
+        legend({'T_{max}','T_{nom}','T_{min}'},'Location','northeast','NumColumns',2)
+        %     legend({'G_{max}','G_2','G_3','G_4','G_5'},'Location','northeast','NumColumns',2)
+        xlabel('{\it V} [V]')
+        ylabel('{\it I} [A]');
+        box on
+        set(gca,'FontSize',18)
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
