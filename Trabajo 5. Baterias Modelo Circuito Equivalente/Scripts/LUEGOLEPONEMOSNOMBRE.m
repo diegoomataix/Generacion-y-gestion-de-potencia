@@ -21,12 +21,16 @@ V_nom_i = 4.2;
 n_serie = round([(max(max(descarga5A(:,3))))/V_nom_i ; (max(max(descarga1_5A(:,3))))/V_nom_i ;  (max(max(descarga2_5A(:,3))))/V_nom_i ])
 
 %Ley de Peukert
-I = 0.55;           %[A]
-t = 1*3600;         %[s]
-C = 2.750*3600;     %[A·s]
+I = 1.5;           %[A]
+t = 36528;         %[s]
+C = [2.750*3600, 2.750*0.97*3600];     %[A·s]
+I = [0.55, 2.75, 5.5, 8,25]
 
-K = -(log(t)-log(C))/log(I);        % Constante de Peukert
+% K = -(log(t)-log(C))/log(I);        % Constante de Peukert
 
+alpha = log(C(2)/C(1))/log(I(2)/I(1))
+
+k = (2*alpha+1)/(1+alpha)
 
 
 
