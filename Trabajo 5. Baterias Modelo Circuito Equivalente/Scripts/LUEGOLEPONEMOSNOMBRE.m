@@ -1,18 +1,20 @@
 clc; close all; clear all;
 
 %% CARGAR DATOS
-load('descarga5A'); load('carga5A');
-load('descarga2_5A'); load('carga2_5A')
-load('descarga1_5A');load('carga1_5A')
+%{Tiempo , Intensidad , Voltaje} (en columnas)
+[descarga5A,~,~]=(xlsread('../ensayos_bateria.xlsx','descarga 5A'));
+[carga5A,~,~]=(xlsread('../ensayos_bateria.xlsx','carga 5A'));
+[descarga2_5A,~,~]=(xlsread('../ensayos_bateria.xlsx','descarga 2.5A'));
+[carga2_5A,~,~]=(xlsread('../ensayos_bateria.xlsx','carga 2.5A'));
+[descarga1_5A,~,~]=(xlsread('../ensayos_bateria.xlsx','descarga 1.5A'));
+[carga1_5A,~,~]=(xlsread('../ensayos_bateria.xlsx','carga 1.5A'));
+% load('descarga5A'); load('carga5A');
+% load('descarga2_5A'); load('carga2_5A')
+% load('descarga1_5A');load('carga1_5A')
 
 %% PROCESAR DATOS
-% {Tiempo , Intensidad , Voltaje} (en columnas)
-descarga5A(:,4) = descarga5A(:,1).*descarga5A(:,2);
-carga5A(:,4) = carga5A(:,1).*carga5A(:,2);
-descarga2_5A(:,4) = descarga2_5A(:,1).*descarga2_5A(:,2);
-carga2_5A(:,4) = carga2_5A(:,1).*carga2_5A(:,2);
-descarga1_5A(:,4) = descarga1_5A(:,1).*descarga1_5A(:,2);
-carga1_5A(:,4) = carga1_5A(:,1).*carga1_5A(:,2);
+
+
 
 %% APARTADO 1
 V_nom_i = 4.2;
@@ -30,21 +32,35 @@ n_par = round(C_p ./ C_nom_cell);
 %% APARTADO 2 - DESCARGA
 R_d = 0.1472;               % [Ohm]
 
-%syms E_d_sym
-%E_d = double( vpasolve( V = E_d_sym - R_d .*I ) )
+% %syms E_d_sym
+% %E_d = double( vpasolve( V = E_d_sym - R_d .*I ) )
+% U0 = [24, R_d];
+% V_exp = [descarga5A(:, 3); descarga2_5A(:, 3); descarga1_5A(:, 3)];
+% I = [descarga5A(:, 2); descarga2_5A(:, 2); descarga1_5A(:, 2)];
+% 
+% [umin,fval]=fminsearch(@(u) RMSE_V(u,  V_exp, I, phi), U0);
+% 
+% RMSE = fval
 
-V = E_d_sym - R_d .*I
-
-%[umin,fval]=fminsearch(@(u)RECT_2R2D(u,V,I_exp), U0);
-
-function error = RECT_2R2D(u, V, I_exp)
+%%%%%%%%%%%%%%%%%%%%%%%Funciones
+function error = RMSE_V(u, V_exp, I, phi)
 global n_dat
-for i=1:size(V,2)
-	I_modelo(i) = Panel_Current_2R2D(u,V(i));
+for j=1:3
+for i=1:size(phi,2)
+	V_modelo(j, i) = lineal(u, I(j), phi(j, i));
 end
-error = (sum((I_modelo - I_exp).^2)/n_dat)^0.5;
+error_vect(j) = (sum((V_modelo(j, :) - V_exp(j, :)).^2)/n_dat)^0.5;
+end
+error = error_vect(1)*17.1816 + error_vect(2)*8.5446 + error_vect(3)
+end
 
 
+function V_lineal = lineal(u, I, phi)
+global Vt
+%R_d = u(1) E_d1 = u(2) E_d2 = u(3)
+E_d = E_d0 + E_d1*phi
+V = E_d - R_d .*I
+end
 %% BACKUP
 % [descarga5A,~,~]=(xlsread('../ensayos_bateria.xlsx','descarga 5A'));
 % [carga5A,~,~]=(xlsread('../ensayos_bateria.xlsx','carga 5A'));
@@ -75,3 +91,11 @@ error = (sum((I_modelo - I_exp).^2)/n_dat)^0.5;
 
 %R_d_test1 = (descarga5A(ind5,3)-descarga2_5A(ind25, 3))./(descarga5A(ind5,2)-descarga2_5A(ind25, 2))
 %R_d_test2 = (descarga5A(t(3, :),3)-descarga1_5A(t(2, :), 3))./(descarga5A(t(3, :),2)-descarga1_5A(t(2, :), 2))
+
+%Capacidad
+% descarga5A(:,5) = descarga5A(:,1).*descarga5A(:,2);
+% carga5A(:,5) = carga5A(:,1).*carga5A(:,2);
+% descarga2_5A(:,5) = descarga2_5A(:,1).*descarga2_5A(:,2);
+% carga2_5A(:,5) = carga2_5A(:,1).*carga2_5A(:,2);
+% descarga1_5A(:,5) = descarga1_5A(:,1).*descarga1_5A(:,2);
+% carga1_5A(:,5) = carga1_5A(:,1).*carga1_5A(:,2);

@@ -50,6 +50,8 @@ switch(caso)
         I_result = I_Kar(5,:)';
         %%% PLOT %%%
         myplot(I_Kar, V, dat, dat_exp)
+        
+        
     %%% Modelo 1D2R %%%
     case 2
         %%% Determine coefficients %%%
@@ -138,23 +140,26 @@ end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function myplot(I, V, dat, dat_exp)
-for i = 1: size(dat,2)
+
     % Plot I-V
     figure()
     hold on
     grid on
     box on
-    plot(  V(i,:) , I(i,:),'-k','LineWidth',2)
-    plot(dat_exp(:,1), dat_exp(:,2), '--k')
+    plot(  V(1,:) , I(1,:),'k','LineWidth',2)
+    plot(  V(2,:) , I(2,:),'--k','LineWidth',2)
+    plot(  V(3,:) , I(3,:),':k','LineWidth',2)
+    plot(  V(4,:) , I(4,:),'-.k','LineWidth',2)
+    plot(  V(5,:) , I(5,:),'Color','#797d7f','LineWidth',2)
     axis tight
-    axis([0 dat(4,i)*1.2 0 dat(1,i)*1.2])
+    axis([0 dat(4,5)*1.2 0 dat(1,5)*1.2])
     xlabel('{\it V} [V]')
     ylabel('{\it I} [A]');
-    legend({'Modelo completo','Resultados experimentales'},'Location','northeast','NumColumns',2)
+    legend({'Caso 1', 'Caso 2', 'Caso 3', 'Caso 4', 'BOL'},'Location','northeast','NumColumns',2)
     box on
     set(gca,'FontSize',18)
     hold off
-end
+
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
