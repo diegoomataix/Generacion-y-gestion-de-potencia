@@ -9,8 +9,8 @@ clc; close all; clear all;
 %[descarga1_5A,~,~]=(xlsread('../ensayos_bateria.xlsx','descarga 1.5A'));
 %[carga1_5A,~,~]=(xlsread('../ensayos_bateria.xlsx','carga 1.5A'));
  load('descarga5A'); load('carga5A');
- load('descarga2_5A'); load('carga2_5A')
- load('descarga1_5A');load('carga1_5A')
+ load('descarga2_5A'); load('carga2_5A');
+ load('descarga1_5A');load('carga1_5A');
 
 %% APARTADO 1
 V_nom_i = 4.2;
