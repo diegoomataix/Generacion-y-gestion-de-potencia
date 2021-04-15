@@ -37,9 +37,9 @@ R_d = 0.1472;               % [Ohm]
 % U0 = [24, R_d];
 % V_exp = [descarga5A(:, 3); descarga2_5A(:, 3); descarga1_5A(:, 3)];
 % I = [descarga5A(:, 2); descarga2_5A(:, 2); descarga1_5A(:, 2)];
-% 
+%
 % [umin,fval]=fminsearch(@(u) RMSE_V(u,  V_exp, I, phi), U0);
-% 
+%
 % RMSE = fval
 
 %%%%%%%%%%%%%%%%%%%%%%%Funciones
