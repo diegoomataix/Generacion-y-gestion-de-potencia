@@ -46,7 +46,16 @@ n_dat = limites;
 [umin,fval]=fminsearch(@(u) RMSE_V(u,  V_exp, I, phi), U0);
 
 Params = umin
-RMSE = fval
+RMSE1 = fval
+
+%%
+% Exponencial 1
+
+U01 = [0.129898838224734,24.3041841517924,-3.99223729243347e-06, 10e-17, 0.1];
+[umin_exp1,fval_exp1]=fminsearch(@(u0) RMSE_exp1(u0,  V_exp, I, phi), U01);
+
+Params_exp1 = umin_exp1
+RMSE2 = fval_exp1
 
 %% PLOTS
 
@@ -132,13 +141,45 @@ E_d = u(2) + u(3)*phi;
 V_lineal = E_d - u(1)*I;
 end
 
-%function V_exp1 = V_exp1(u, I, phi)
-%global Vt
+function V_exp1 = V_exp1(u, I, phi)
+global Vt
 %R_d = u(1); E_d0 = u(2); E_d1 = u(3); E_d2=u(4); E_d3=u(5);
-%E_d = u(2) + u(3)*phi + u(4)*exp(u(5)*phi);
-%V_exp1 = E_d - u(1)*I;
-%end
+E_d = u(2) + u(3)*phi + u(4)*exp(u(5)*phi);
+V_exp1 = E_d - u(1)*I;
+end
 
+function error = RMSE_exp1(u, V_exp, I, phi)
+global n_dat; global pesos; global limites;
+for i = 1:size(phi,1)
+	if i <= limites(1)
+		j = 1;
+	elseif i <= limites(2) + limites(1)
+		j = 2;
+	else
+		j = 3;
+	end
+	V_modelo(i) = V_exp1(u, I(i), phi(i));
+	if i == limites(1)
+		V_mod_err = V_modelo(1:limites(1));
+		V_exp_err = V_exp(1:limites(1));
+		error_vect(j) = ((sum (( V_mod_err' - V_exp_err).^2 ) / n_dat(j))^0.5);
+
+	elseif i == limites(1) + limites(2)
+		V_mod_err = V_modelo( limites(1)+1:limites(1)+limites(2));
+		V_exp_err = V_exp( limites(1)+1:limites(1)+limites(2));
+		error_vect(j) = ((sum (( V_mod_err' - V_exp_err).^2 ) / n_dat(j))^0.5);
+
+	elseif  i == sum(limites)
+		V_mod_err = V_modelo(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3));
+		V_exp_err = V_exp(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3));
+		error_vect(j) = (sum((V_mod_err' - V_exp_err).^2)/n_dat(j))^0.5;
+     else
+	end
+
+end
+
+error = error_vect(1) + error_vect(2)+ error_vect(3);
+end
 
 %% BACKUP
 % Ley de Peukert
