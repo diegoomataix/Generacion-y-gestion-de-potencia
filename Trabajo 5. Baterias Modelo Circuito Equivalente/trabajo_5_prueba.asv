@@ -6,9 +6,9 @@ load('descarga5A'); load('carga5A');
 load('descarga2_5A'); load('carga2_5A')
 load('descarga1_5A');load('carga1_5A')
 
-global limites
-global pesos
-global n_dat
+global limites 
+global pesos 
+global 
 %% PROCESAR DATOS
 
 
@@ -38,7 +38,6 @@ phi = [descarga5A(:,4);descarga2_5A(:,4);descarga1_5A(:,4)];
 
 pesos = [17.1816, 8.5446, 1];
 limites = [size(descarga5A,1), size(descarga2_5A,1), size(descarga1_5A,1)];
-n_dat = limites;
 
 % M =[ I1_5,phi1_5,phi2;
 %	   I2_5,phi2_5,phi2;
@@ -60,20 +59,14 @@ for i = 1:size(phi,1)
 	else
 		j = 3;
 	end
-	V_modelo(i) = lineal(u, I(i,1), phi(i,1));
+	V_modelo(i, 1) = lineal(u, I(i,1), phi(i,1));
 	if i == limites(1)
-        i
-		V_mod_err = V_modelo(1:limites(1));
-		V_exp_err = V_exp(1:limites(1));
-		error_vect(:,j) = ((sum (( V_mod_err' - V_exp_err).^2 ) / n_dat(j))^0.5)
-        %RMSE_dim = ((sum((I_modelo - I_exp).^2)/size(I_exp,1))^0.5);
-		%error = (sum((I_modelo - I_exp).^2)/n_dat)^0.5;
+		error_vect(j) = (sum((V_modelo(j, 1:limites(1)) - V_exp(j, 1:limites(1))).^2)/n_dat)^0.5;
 	elseif i == limites(1) + limites(2)
-		error_vect(:,j) = (sum((V_modelo( limites(1)+1:limites(1)+limites(2)) - V_exp( limites(1)+1:limites(1)+limites(2))).^2)/n_dat(j)).^0.5
-	elseif  i == sum(limites)
-		error_vect(:,j) = (sum((V_modelo(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3))...
-		 - V_exp( limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3))).^2)/n_dat(j)).^0.5
-     else
+		error_vect(j) = (sum((V_modelo(j, limites(1)+1:limites(1)+limites(2)) - V_exp(j, limites(1)+1:limites(1)+limites(2))).^2)/n_dat)^0.5;
+	else  i == size(descarga1_5A,1)
+		error_vect(j) = (sum((V_modelo(j, limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3))...
+		 - V_exp(j, limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3))).^2)/n_dat)^0.5;
 	end
 
 end
@@ -86,7 +79,7 @@ function V_lineal = lineal(u, I, phi)
 global Vt
 %R_d = u(1); E_d0 = u(2); E_d1 = u(3);
 E_d = u(2) + u(3)*phi;
-V_lineal = E_d - u(1) .*I;
+V = E_d - u(1) .*I;
 end
 
 
