@@ -1,7 +1,6 @@
 clc; close all; clear all;
 
 %% CARGAR DATOS
-% {Tiempo , Intensidad , Voltaje} (en columnas)
 load('descarga5A'); load('carga5A');
 load('descarga2_5A'); load('carga2_5A')
 load('descarga1_5A');load('carga1_5A')
@@ -28,9 +27,8 @@ n_par = round(C_p ./ C_nom_cell);
 %% APARTADO 2 - DESCARGA
 R_d_init = 0.1472;               % [Ohm]
 
-%syms E_d_sym
-%E_d = double( vpasolve( V = E_d_sym - R_d .*I ) )
-U0 = [R_d_init, 24, -1e-5 ];
+% U0 = [R_d_init, 24, -1e-5 ]; % Primera Iteracion
+U0 = [0.129898838224734,24.3041841517924,-3.99223729243347e-06]; % Segunda Iteracion
 t_vect = [descarga5A(:, 1); descarga2_5A(:, 1); descarga1_5A(:, 1)];
 I = [descarga5A(:, 2); descarga2_5A(:, 2); descarga1_5A(:, 2)];
 V_exp = [descarga5A(:, 3); descarga2_5A(:, 3); descarga1_5A(:, 3)];
@@ -47,7 +45,50 @@ n_dat = limites;
 
 [umin,fval]=fminsearch(@(u) RMSE_V(u,  V_exp, I, phi), U0);
 
+Params = umin
 RMSE = fval
+
+%% PLOTS
+
+lim = [1, limites(1), limites(1)+1, limites(1)+limites(2), limites(1)+limites(2)+1, limites(1)+limites(2)+limites(3)];
+
+%phi_mat = [phi(lim(1):lim(2)), phi(lim(3):lim(4)), phi(lim(5):lim(6))];
+
+figure()
+hold on
+grid on
+box on
+
+V_modelo = zeros(limites(1), 1);
+for i=1:lim(2)
+   V_modelo(i) = lineal(umin,5, phi(i));
+end
+plot (phi(lim(1):lim(2)), V_modelo, '--k');
+
+V_modelo = zeros(limites(2), 1);
+for i=lim(3):lim(4)
+   V_modelo(i-lim(3)+1) = lineal(umin,2.5, phi(i));
+end
+plot (phi(lim(3):lim(4)), V_modelo, '--k');
+
+V_modelo = zeros(limites(3), 1);
+for i=lim(5):(lim(6))
+   V_modelo(i-lim(5)+1) = lineal(umin,1.5, phi(i));
+end
+plot (phi(lim(5):lim(6)), V_modelo, '--k');
+
+
+plot (phi(1:limites(1)),V_exp(1:limites(1)),'k');
+plot (phi(limites(1)+1:limites(1)+limites(2)),V_exp( limites(1)+1:limites(1)+limites(2)),'k');
+plot (phi(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3)),V_exp(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3)),'k');
+
+xlabel('{\it V} [V]')
+ylabel('{\it phi} [W·s]');
+%legend({'Aproximación numérica','Datos experimentales'},'Location','northeast','NumColumns',1)
+box on
+set(gca,'FontSize',18)
+hold off
+
 
 %%%%%%%%%%%%%%%%%%%%%%%Funciones
 function error = RMSE_V(u, V_exp, I, phi)
@@ -60,25 +101,27 @@ for i = 1:size(phi,1)
 	else
 		j = 3;
 	end
-	V_modelo(i) = lineal(u, I(i,1), phi(i,1));
+	V_modelo(i) = lineal(u, I(i), phi(i));
 	if i == limites(1)
-        i
 		V_mod_err = V_modelo(1:limites(1));
 		V_exp_err = V_exp(1:limites(1));
-		error_vect(:,j) = ((sum (( V_mod_err' - V_exp_err).^2 ) / n_dat(j))^0.5)
-        %RMSE_dim = ((sum((I_modelo - I_exp).^2)/size(I_exp,1))^0.5);
-		%error = (sum((I_modelo - I_exp).^2)/n_dat)^0.5;
+		error_vect(j) = ((sum (( V_mod_err' - V_exp_err).^2 ) / n_dat(j))^0.5);
+
 	elseif i == limites(1) + limites(2)
-		error_vect(:,j) = (sum((V_modelo( limites(1)+1:limites(1)+limites(2)) - V_exp( limites(1)+1:limites(1)+limites(2))).^2)/n_dat(j)).^0.5
+		V_mod_err = V_modelo( limites(1)+1:limites(1)+limites(2));
+		V_exp_err = V_exp( limites(1)+1:limites(1)+limites(2));
+		error_vect(j) = ((sum (( V_mod_err' - V_exp_err).^2 ) / n_dat(j))^0.5);
+
 	elseif  i == sum(limites)
-		error_vect(:,j) = (sum((V_modelo(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3))...
-		 - V_exp( limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3))).^2)/n_dat(j)).^0.5
+		V_mod_err = V_modelo(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3));
+		V_exp_err = V_exp(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3));
+		error_vect(j) = (sum((V_mod_err' - V_exp_err).^2)/n_dat(j))^0.5;
      else
 	end
 
 end
 
-error = error_vect(1)*pesos(1) + error_vect(2)*pesos(2) + error_vect(3)*pesos(3)
+error = error_vect(1) + error_vect(2)+ error_vect(3);
 end
 
 
@@ -86,9 +129,15 @@ function V_lineal = lineal(u, I, phi)
 global Vt
 %R_d = u(1); E_d0 = u(2); E_d1 = u(3);
 E_d = u(2) + u(3)*phi;
-V_lineal = E_d - u(1) .*I;
+V_lineal = E_d - u(1)*I;
 end
 
+%function V_exp1 = V_exp1(u, I, phi)
+%global Vt
+%R_d = u(1); E_d0 = u(2); E_d1 = u(3); E_d2=u(4); E_d3=u(5);
+%E_d = u(2) + u(3)*phi + u(4)*exp(u(5)*phi);
+%V_exp1 = E_d - u(1)*I;
+%end
 
 
 %% BACKUP
@@ -123,9 +172,10 @@ end
 % descarga1_5A(:,5) = descarga1_5A(:,1).*descarga1_5A(:,2);
 % carga1_5A(:,5) = carga1_5A(:,1).*carga1_5A(:,2);
 
-% [descarga5A,~,~]=(xlsread('../ensayos_bateria.xlsx','descarga 5A'));
-% [carga5A,~,~]=(xlsread('../ensayos_bateria.xlsx','carga 5A'));
-% [descarga2_5A,~,~]=(xlsread('../ensayos_bateria.xlsx','descarga 2.5A'));
-% [carga2_5A,~,~]=(xlsread('../ensayos_bateria.xlsx','carga 2.5A'));
-% [descarga1_5A,~,~]=(xlsread('../ensayos_bateria.xlsx','descarga 1.5A'));
-% [carga1_5A,~,~]=(xlsread('../ensayos_bateria.xlsx','carga 1.5A'));
+% {Tiempo , Intensidad , Voltaje} (en columnas)
+% [descarga5A,~,~]=(xlsread('ensayos_bateria.xlsx','descarga 5A'));
+% [carga5A,~,~]=(xlsread('ensayos_bateria.xlsx','carga 5A'));
+% [descarga2_5A,~,~]=(xlsread('ensayos_bateria.xlsx','descarga 2.5A'));
+% [carga2_5A,~,~]=(xlsread('ensayos_bateria.xlsx','carga 2.5A'));
+% [descarga1_5A,~,~]=(xlsread('ensayos_bateria.xlsx','descarga 1.5A'));
+% [carga1_5A,~,~]=(xlsread('ensayos_bateria.xlsx','carga 1.5A'));
