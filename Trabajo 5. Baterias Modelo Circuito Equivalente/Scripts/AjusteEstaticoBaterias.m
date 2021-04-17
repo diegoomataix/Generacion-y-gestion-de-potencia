@@ -8,6 +8,9 @@ load('descarga1_5A');load('carga1_5A')
 global limites
 global pesos
 global n_dat
+global caso
+caso = 3;
+
 %% PROCESAR DATOS
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28,6 +31,9 @@ n_par = round(C_p ./ C_nom_cell);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% APARTADO 2 - DESCARGA
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% LINEAL
 R_d_init = 0.1472;               % [Ohm]
 
 % U0 = [R_d_init, 24, -1e-5 ]; % Primera Iteracion
@@ -45,29 +51,32 @@ n_dat = limites;
 %	   I2_5,phi2_5,phi2;
 %	   I5,phi5,phi2 ]
 % M = [I(3),phi(3);]
-
+switch(caso)
+case 1
 [umin,fval]=fminsearch(@(u) RMSE_V(u,  V_exp, I, phi), U0);
 
 Params = umin
 RMSE1 = fval
 
-%%
-% Exponencial 1
-
+%% EXPONENCIAL MALA
+case 2
 U01 = [0.129898838224734,24.3041841517924,-3.99223729243347e-06, -1e-12, 3.35e-5];
-[umin_exp1,fval_exp1]=fminsearch(@(u1) RMSE_exp1(u1,  V_exp, I, phi), U01);
-%
+[umin_exp1,fval_exp1]=fminsearch(@(u1) RMSE_V(u1,  V_exp, I, phi), U01);
 Params_exp1 = umin_exp1
 RMSE2 = fval_exp1
 
-%test sin mover
-% U_lin = [0.129898838224734,24.3041841517924,-3.99223729243347e-06];
-% U01 = [-1e-17, 3.35e-5];
-% [umin_exp1,fval_exp1]=fminsearch(@(u1) RMSE_exp1(u1, U_lin,  V_exp, I, phi), U01);
+%% EXPONENCIAL BUENA
+case 3
+%U02 = [0.129898838224734,24.3041841517924,-3.99223729243347e-06, -1e-12, 3.35e-5 ,    ,    ,    ];
+% valores del paper
+U02 = [0.134, 24.369,-1.227e-2/3600, -1e-9, -4e-10 , 4.7e-11 , 5.8e-2/3600, -3.36e-10/3600];
 
-% Params_exp1 = [U_lin,umin_exp1]
-% RMSE2 = fval_exp1
+[umin_exp2,fval_exp2]=fminsearch(@(u2) RMSE_V(u2,  V_exp, I, phi), U02);
+Params_exp2 = umin_exp2
+RMSE2 = fval_exp2
 
+
+end
 %% PLOTS
 
 lim = [1, limites(1), limites(1)+1, limites(1)+limites(2), limites(1)+limites(2)+1, limites(1)+limites(2)+limites(3)];
@@ -81,31 +90,41 @@ box on
 
 V_modelo = zeros(limites(1), 1);
 V_modelo_exp1 =  zeros(limites(1), 1);
+V_modelo_exp2 =  zeros(limites(1), 1);
 
 for i=1:lim(2)
-   V_modelo(i) = lineal(umin,5, phi(i));                        % Parte Lineal
-   V_modelo_exp1(i) = V_exp1(Params_exp1,5,phi(i));               % Parte Exponencial
+%    V_modelo(i) = lineal(umin,5, phi(i));                        % Parte Lineal
+%    V_modelo_exp1(i) = V_exp1(Params_exp1,5,phi(i));             % Parte Exponencial Mala
+   V_modelo_exp2(i) = V_exp2(Params_exp2,5,phi(i));             % Parte Exponencial Buena
 end
 %plot (phi(lim(1):lim(2)), V_modelo, '--k');                    % Parte Lineal
-plot (phi(lim(1):lim(2)), V_modelo_exp1, '--k');                % Parte Exponencial
+%plot (phi(lim(1):lim(2)), V_modelo_exp1, '--k');               % Parte Exponencial
+plot (phi(lim(1):lim(2)), V_modelo_exp2, '--k');
 
 V_modelo = zeros(limites(2), 1);
 V_modelo_exp1 = zeros(limites(2), 1);
+V_modelo_exp2 = zeros(limites(2), 1);
 for i=lim(3):lim(4)
-   V_modelo(i-lim(3)+1) = lineal(umin,2.5, phi(i));             % Parte Lineal
-   V_modelo_exp1(i-lim(3)+1) = V_exp1(Params_exp1,2.5,phi(i));     % Parte Exponencial
+%    V_modelo(i-lim(3)+1) = lineal(umin,2.5, phi(i));             % Parte Lineal
+%    V_modelo_exp1(i-lim(3)+1) = V_exp1(Params_exp1,2.5,phi(i));
+   V_modelo_exp2(i-lim(3)+1) = V_exp2(Params_exp2,2.5,phi(i));     % Parte Exponencial
 end
 %plot (phi(lim(3):lim(4)), V_modelo, '--k');                    % Parte Lineal
-plot (phi(lim(3):lim(4)), V_modelo_exp1, '--k');
+%plot (phi(lim(3):lim(4)), V_modelo_exp1, '--k');
+plot (phi(lim(3):lim(4)), V_modelo_exp2, '--k');
 
 V_modelo = zeros(limites(3), 1);
 V_modelo_exp1 = zeros(limites(3), 1);
+V_modelo_exp2 = zeros(limites(3), 1);
 for i=lim(5):(lim(6))
-   V_modelo(i-lim(5)+1) = lineal(umin,1.5, phi(i));             % Parte Lineal
-   V_modelo_exp1(i-lim(5)+1) = V_exp1(Params_exp1,1.5,phi(i));     % Parte Exponencial
+%    V_modelo(i-lim(5)+1) = lineal(umin,1.5, phi(i));             % Parte Lineal
+%    V_modelo_exp1(i-lim(5)+1) = V_exp1(Params_exp1,1.5,phi(i));
+    V_modelo_exp2(i-lim(5)+1) = V_exp2(Params_exp2,1.5,phi(i));    % Parte Exponencial
 end
 %plot (phi(lim(5):lim(6)), V_modelo, '--k');
-plot (phi(lim(5):lim(6)), V_modelo_exp1, '--k');
+%plot (phi(lim(5):lim(6)), V_modelo_exp1, '--k');
+plot (phi(lim(5):lim(6)), V_modelo_exp2, '--k');
+
 
 % Curvas Experimentales
 plot (phi(1:limites(1)),V_exp(1:limites(1)),'k');
@@ -124,6 +143,7 @@ hold off
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function error = RMSE_V(u, V_exp, I, phi)
 global n_dat; global pesos; global limites;
+global caso
 V_modelo = zeros (1,sum(limites));
 for i = 1:size(phi,1)
 	if i <= limites(1)
@@ -133,7 +153,16 @@ for i = 1:size(phi,1)
 	else
 		j = 3;
 	end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    if caso == 1
 	V_modelo(i) = lineal(u, I(i), phi(i));
+elseif caso == 2
+    V_modelo(i) = V_exp1(u, I(i), phi(i));
+elseif  caso == 3
+    V_modelo(i) = V_exp2(u, I(i), phi(i));
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	if i == limites(1)
 		V_mod_err = V_modelo(1:limites(1));
 		V_exp_err = V_exp(1:limites(1));
@@ -171,39 +200,46 @@ E_d = u(2) + u(3)*phi + u(4)*exp(u(5)*phi);
 V_exp1 = E_d - u(1)*I;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function error = RMSE_exp1(u, V_exp, I, phi)
-global n_dat; global pesos; global limites;
-%V_modelo = zeros (1,sum(limites));
-for i = 1:size(phi,1)
-	if i <= limites(1)
-		j = 1;
-	elseif i <= limites(2) + limites(1)
-		j = 2;
-	else
-		j = 3;
-	end
-	V_modelo(i) = V_exp1(u, I(i), phi(i));
-	if i == limites(1)
-		V_mod_err = V_modelo(1:limites(1));
-		V_exp_err = V_exp(1:limites(1));
-		error_vect(j) = ((sum (( V_mod_err' - V_exp_err).^2 ) / n_dat(j))^0.5);
-
-	elseif i == limites(1) + limites(2)
-		V_mod_err = V_modelo( limites(1)+1:limites(1)+limites(2));
-		V_exp_err = V_exp( limites(1)+1:limites(1)+limites(2));
-		error_vect(j) = ((sum (( V_mod_err' - V_exp_err).^2 ) / n_dat(j))^0.5);
-
-	elseif  i == sum(limites)
-		V_mod_err = V_modelo(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3));
-		V_exp_err = V_exp(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3));
-		error_vect(j) = (sum((V_mod_err' - V_exp_err).^2)/n_dat(j))^0.5;
-     else
-	end
-
+function V_exp2 = V_exp2(u, I, phi)
+global Vt
+%R_d = u(1); E_d0 = u(2); E_d1 = u(3); E_d2_0=u(4); E_d2_1=u(5); E_d2_2=u(6); E_d3_0=u(7); E_d3_1=u(8);
+E_d = u(2) + u(3)*phi + (u(4) + u(5)*I + u(6)*I^2)*exp((u(7) + u(8)*I)*phi);
+V_exp2 = E_d - u(1)*I;
 end
-
-error = error_vect(1) + error_vect(2)+ error_vect(3);
-end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% function error = RMSE_exp1(u, V_exp, I, phi)
+% global n_dat; global pesos; global limites;
+% %V_modelo = zeros (1,sum(limites));
+% for i = 1:size(phi,1)
+% 	if i <= limites(1)
+% 		j = 1;
+% 	elseif i <= limites(2) + limites(1)
+% 		j = 2;
+% 	else
+% 		j = 3;
+% 	end
+% 	V_modelo(i) = V_exp1(u, I(i), phi(i));
+% 	if i == limites(1)
+% 		V_mod_err = V_modelo(1:limites(1));
+% 		V_exp_err = V_exp(1:limites(1));
+% 		error_vect(j) = ((sum (( V_mod_err' - V_exp_err).^2 ) / n_dat(j))^0.5);
+%
+% 	elseif i == limites(1) + limites(2)
+% 		V_mod_err = V_modelo( limites(1)+1:limites(1)+limites(2));
+% 		V_exp_err = V_exp( limites(1)+1:limites(1)+limites(2));
+% 		error_vect(j) = ((sum (( V_mod_err' - V_exp_err).^2 ) / n_dat(j))^0.5);
+%
+% 	elseif  i == sum(limites)
+% 		V_mod_err = V_modelo(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3));
+% 		V_exp_err = V_exp(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3));
+% 		error_vect(j) = (sum((V_mod_err' - V_exp_err).^2)/n_dat(j))^0.5;
+%      else
+% 	end
+%
+% end
+%
+% error = error_vect(1) + error_vect(2)+ error_vect(3);
+% end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% BACKUP
 % Ley de Peukert
@@ -244,3 +280,11 @@ end
 % [carga2_5A,~,~]=(xlsread('ensayos_bateria.xlsx','carga 2.5A'));
 % [descarga1_5A,~,~]=(xlsread('ensayos_bateria.xlsx','descarga 1.5A'));
 % [carga1_5A,~,~]=(xlsread('ensayos_bateria.xlsx','carga 1.5A'));
+
+%test sin mover
+% U_lin = [0.129898838224734,24.3041841517924,-3.99223729243347e-06];
+% U01 = [-1e-17, 3.35e-5];
+% [umin_exp1,fval_exp1]=fminsearch(@(u1) RMSE_exp1(u1, U_lin,  V_exp, I, phi), U01);
+
+% Params_exp1 = [U_lin,umin_exp1]
+% RMSE2 = fval_exp1
