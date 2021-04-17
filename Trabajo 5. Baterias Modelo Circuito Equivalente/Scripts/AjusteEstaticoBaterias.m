@@ -61,11 +61,11 @@ RMSE1 = fval
 % RMSE2 = fval_exp1
 
 %test sin mover
-U_lin = [0.129898838224734,24.3041841517924,-3.99223729243347e-02];
-U01 = [-10e-20, 5.5e-5];
+U_lin = [0.129898838224734,24.3041841517924,-3.99223729243347e-06];
+U01 = [-10e-19, 5.5e-2];
 [umin_exp1,fval_exp1]=fminsearch(@(u1) RMSE_exp1(u1, U_lin,  V_exp, I, phi), U01);
 
-Params_exp1 = umin_exp1
+Params_exp1 = [U_lin,umin_exp1]
 RMSE2 = fval_exp1
 
 %% PLOTS
@@ -84,7 +84,7 @@ V_modelo_exp1 =  zeros(limites(1), 1);
 
 for i=1:lim(2)
    V_modelo(i) = lineal(umin,5, phi(i));                        % Parte Lineal
-   V_modelo_exp1(i) = V_exp1(umin_exp1,5,phi(i));               % Parte Exponencial
+   V_modelo_exp1(i) = V_exp1(Params_exp1,5,phi(i));               % Parte Exponencial
 end
 %plot (phi(lim(1):lim(2)), V_modelo, '--k');                    % Parte Lineal
 plot (phi(lim(1):lim(2)), V_modelo_exp1, '--k');                % Parte Exponencial
@@ -93,7 +93,7 @@ V_modelo = zeros(limites(2), 1);
 V_modelo_exp1 = zeros(limites(2), 1);
 for i=lim(3):lim(4)
    V_modelo(i-lim(3)+1) = lineal(umin,2.5, phi(i));             % Parte Lineal
-   V_modelo_exp1(i-lim(3)+1) = V_exp1(umin_exp1,2.5,phi(i));     % Parte Exponencial
+   V_modelo_exp1(i-lim(3)+1) = V_exp1(Params_exp1,2.5,phi(i));     % Parte Exponencial
 end
 %plot (phi(lim(3):lim(4)), V_modelo, '--k');                    % Parte Lineal
 plot (phi(lim(3):lim(4)), V_modelo_exp1, '--k');
@@ -102,7 +102,7 @@ V_modelo = zeros(limites(3), 1);
 V_modelo_exp1 = zeros(limites(3), 1);
 for i=lim(5):(lim(6))
    V_modelo(i-lim(5)+1) = lineal(umin,1.5, phi(i));             % Parte Lineal
-   V_modelo_exp1(i-lim(5)+1) = V_exp1(umin_exp1,1.5,phi(i));     % Parte Exponencial
+   V_modelo_exp1(i-lim(5)+1) = V_exp1(Params_exp1,1.5,phi(i));     % Parte Exponencial
 end
 %plot (phi(lim(5):lim(6)), V_modelo, '--k');
 plot (phi(lim(5):lim(6)), V_modelo_exp1, '--k');
@@ -115,7 +115,7 @@ plot (phi(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3)),V_exp(limite
 xlabel('{\it V} [V]')
 ylabel('{\it phi} [W·s]');
 %legend({'Aproximación numérica','Datos experimentales'},'Location','northeast','NumColumns',1)
-box on
+axis([0 12e5 0 25])
 set(gca,'FontSize',18)
 hold off
 
