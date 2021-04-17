@@ -10,10 +10,11 @@ global pesos
 global n_dat
 %% PROCESAR DATOS
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% APARTADO 1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 V_nom_i = 4.2;
-C_nom_cell = 2750;
+C_nom_cell = 2850*3600/1000; % [A.s]
 n_serie = round([(max(max(descarga5A(:,3))))/V_nom_i ; (max(max(descarga1_5A(:,3))))/V_nom_i ;  (max(max(descarga2_5A(:,3))))/V_nom_i ]);
 
 t = [10615,21365,36528];    % [s]
@@ -24,7 +25,9 @@ k = log(t(3)/t(1))/ log(I(1)/I(3));
 C_p = I.^k.*t;              % [A·s]
 n_par = round(C_p ./ C_nom_cell);
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% APARTADO 2 - DESCARGA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 R_d_init = 0.1472;               % [Ohm]
 
 % U0 = [R_d_init, 24, -1e-5 ]; % Primera Iteracion
@@ -51,8 +54,16 @@ RMSE1 = fval
 %%
 % Exponencial 1
 
-U01 = [0.129898838224734,24.3041841517924,-3.99223729243347e-06, 10e-17, 0.1];
-[umin_exp1,fval_exp1]=fminsearch(@(u0) RMSE_exp1(u0,  V_exp, I, phi), U01);
+% U01 = [0.129898838224734,24.3041841517924,-3.99223729243347e-02, -10e-20, 5.5e-5];
+% [umin_exp1,fval_exp1]=fminsearch(@(u1) RMSE_exp1(u1,  V_exp, I, phi), U01);
+%
+% Params_exp1 = umin_exp1
+% RMSE2 = fval_exp1
+
+%test sin mover
+U_lin = [0.129898838224734,24.3041841517924,-3.99223729243347e-02];
+U01 = [-10e-20, 5.5e-5];
+[umin_exp1,fval_exp1]=fminsearch(@(u1) RMSE_exp1(u1, U_lin,  V_exp, I, phi), U01);
 
 Params_exp1 = umin_exp1
 RMSE2 = fval_exp1
@@ -69,24 +80,34 @@ grid on
 box on
 
 V_modelo = zeros(limites(1), 1);
+V_modelo_exp1 =  zeros(limites(1), 1);
+
 for i=1:lim(2)
-   V_modelo(i) = lineal(umin,5, phi(i));
+   V_modelo(i) = lineal(umin,5, phi(i));                        % Parte Lineal
+   V_modelo_exp1(i) = V_exp1(umin_exp1,5,phi(i));               % Parte Exponencial
 end
-plot (phi(lim(1):lim(2)), V_modelo, '--k');
+%plot (phi(lim(1):lim(2)), V_modelo, '--k');                    % Parte Lineal
+plot (phi(lim(1):lim(2)), V_modelo_exp1, '--k');                % Parte Exponencial
 
 V_modelo = zeros(limites(2), 1);
+V_modelo_exp1 = zeros(limites(2), 1);
 for i=lim(3):lim(4)
-   V_modelo(i-lim(3)+1) = lineal(umin,2.5, phi(i));
+   V_modelo(i-lim(3)+1) = lineal(umin,2.5, phi(i));             % Parte Lineal
+   V_modelo_exp1(i-lim(3)+1) = V_exp1(umin_exp1,2.5,phi(i));     % Parte Exponencial
 end
-plot (phi(lim(3):lim(4)), V_modelo, '--k');
+%plot (phi(lim(3):lim(4)), V_modelo, '--k');                    % Parte Lineal
+plot (phi(lim(3):lim(4)), V_modelo_exp1, '--k');
 
 V_modelo = zeros(limites(3), 1);
+V_modelo_exp1 = zeros(limites(3), 1);
 for i=lim(5):(lim(6))
-   V_modelo(i-lim(5)+1) = lineal(umin,1.5, phi(i));
+   V_modelo(i-lim(5)+1) = lineal(umin,1.5, phi(i));             % Parte Lineal
+   V_modelo_exp1(i-lim(5)+1) = V_exp1(umin_exp1,1.5,phi(i));     % Parte Exponencial
 end
-plot (phi(lim(5):lim(6)), V_modelo, '--k');
+%plot (phi(lim(5):lim(6)), V_modelo, '--k');
+plot (phi(lim(5):lim(6)), V_modelo_exp1, '--k');
 
-
+% Curvas Experimentales
 plot (phi(1:limites(1)),V_exp(1:limites(1)),'k');
 plot (phi(limites(1)+1:limites(1)+limites(2)),V_exp( limites(1)+1:limites(1)+limites(2)),'k');
 plot (phi(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3)),V_exp(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3)),'k');
@@ -98,10 +119,12 @@ box on
 set(gca,'FontSize',18)
 hold off
 
-
-%%%%%%%%%%%%%%%%%%%%%%%Funciones
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Funciones
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function error = RMSE_V(u, V_exp, I, phi)
 global n_dat; global pesos; global limites;
+V_modelo = zeros (1,sum(limites));
 for i = 1:size(phi,1)
 	if i <= limites(1)
 		j = 1;
@@ -132,7 +155,7 @@ end
 
 error = error_vect(1) + error_vect(2)+ error_vect(3);
 end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function V_lineal = lineal(u, I, phi)
 global Vt
@@ -140,16 +163,17 @@ global Vt
 E_d = u(2) + u(3)*phi;
 V_lineal = E_d - u(1)*I;
 end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function V_exp1 = V_exp1(u, I, phi)
 global Vt
 %R_d = u(1); E_d0 = u(2); E_d1 = u(3); E_d2=u(4); E_d3=u(5);
 E_d = u(2) + u(3)*phi + u(4)*exp(u(5)*phi);
 V_exp1 = E_d - u(1)*I;
 end
-
-function error = RMSE_exp1(u, V_exp, I, phi)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function error = RMSE_exp1(u, U_lin, V_exp, I, phi)
 global n_dat; global pesos; global limites;
+%V_modelo = zeros (1,sum(limites));
 for i = 1:size(phi,1)
 	if i <= limites(1)
 		j = 1;
@@ -158,7 +182,7 @@ for i = 1:size(phi,1)
 	else
 		j = 3;
 	end
-	V_modelo(i) = V_exp1(u, I(i), phi(i));
+	V_modelo(i) = V_exp1([u, U_lin], I(i), phi(i));
 	if i == limites(1)
 		V_mod_err = V_modelo(1:limites(1));
 		V_exp_err = V_exp(1:limites(1));
@@ -180,7 +204,7 @@ end
 
 error = error_vect(1) + error_vect(2)+ error_vect(3);
 end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% BACKUP
 % Ley de Peukert
 %I = 1.5;                                         % [A]
