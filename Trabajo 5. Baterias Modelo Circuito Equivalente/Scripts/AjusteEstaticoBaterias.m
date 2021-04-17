@@ -62,7 +62,7 @@ RMSE1 = fval
 
 %test sin mover
 U_lin = [0.129898838224734,24.3041841517924,-3.99223729243347e-06];
-U01 = [-10e-19, 5.5e-2];
+U01 = [-10e-19, 5.5e-4];
 [umin_exp1,fval_exp1]=fminsearch(@(u1) RMSE_exp1(u1, U_lin,  V_exp, I, phi), U01);
 
 Params_exp1 = [U_lin,umin_exp1]
