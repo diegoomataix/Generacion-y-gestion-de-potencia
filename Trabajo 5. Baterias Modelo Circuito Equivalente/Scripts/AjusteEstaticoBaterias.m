@@ -7,13 +7,13 @@ load('descarga2_5A'); load('carga2_5A');
 load('descarga1_5A');load('carga1_5A');
 
 global limites; global pesos; global n_dat; global caso;
-global phi2
+global phi2_des ; global phi2_carga
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DESCARGA [1: lineal   % 2: exp. 1era aprox.   % 3: exp. completo ]
 % CARGA    [4: lineal   % 5: exp. completo]
-caso = 1;
+caso = 5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-modelo = 1;        % 1: descarga       % 2: carga
+modelo = 2;        % 1: descarga       % 2: carga
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% PROCESAR DATOS
@@ -49,7 +49,7 @@ t_vect = [descarga5A(:, 1); descarga2_5A(:, 1); descarga1_5A(:, 1)];
 I = [descarga5A(:, 2); descarga2_5A(:, 2); descarga1_5A(:, 2)];
 V_exp = [descarga5A(:, 3); descarga2_5A(:, 3); descarga1_5A(:, 3)];
 phi = [descarga5A(:,4);descarga2_5A(:,4);descarga1_5A(:,4)];
-phi2 = [descarga5A(:,5);descarga2_5A(:,5);descarga1_5A(:,5)];
+phi2_des = [descarga5A(:,5);descarga2_5A(:,5);descarga1_5A(:,5)];
 
 
 pesos = [17.1816, 8.5446, 1];
@@ -99,6 +99,8 @@ t_vect = [carga5A(:, 1); carga2_5A(:, 1); carga1_5A(:, 1)];
 I = [carga5A(:, 2); carga2_5A(:, 2); carga1_5A(:, 2)];
 V_exp = [carga5A(:, 3); carga2_5A(:, 3); carga1_5A(:, 3)];
 phi = [carga5A(:,4);carga2_5A(:,4);carga1_5A(:,4)];
+phi2_carga = [carga5A(:,5);carga2_5A(:,5);carga1_5A(:,5)];
+
 
 limites = [size(carga5A,1), size(carga2_5A,1), size(carga1_5A,1)];
 lim = [1, limites(1), limites(1)+1, limites(1)+limites(2), limites(1)+limites(2)+1, limites(1)+limites(2)+limites(3)];
@@ -139,11 +141,11 @@ if caso == 1
 elseif caso == 2
    V_modelo(i) = V_exp1(Params_exp1,5,phi(i));             % Parte Exponencial Mala DESCARGA
 elseif caso == 3
-   V_modelo(i) = V_exp2(Params_exp2,5,phi(i),phi2(i));             % Parte Exponencial Buena  DESCARGA
+   V_modelo(i) = V_exp2(Params_exp2,5,phi(i),phi2_des(i));             % Parte Exponencial Buena  DESCARGA
 elseif caso == 4
-   V_modelo(i) = V_lineal_carga(Params_cargal,5,phi(i));             % Parte Lineal CARGA
+   V_modelo(i) = V_lineal_carga(Params_cargal,5,phi(i),phi2_carga(i));             % Parte Lineal CARGA
 elseif caso == 5                                                % exp Completo   CARGA
-    V_modelo(i) = V_exp_carga(Params_cargaexp,5,phi(i));     %TBD
+    V_modelo(i) = V_exp_carga(Params_cargaexp,5,phi(i),phi2_carga(i));     %TBD
 end
 end
 plot (phi(lim(1):lim(2))/3600, V_modelo, '--k');                    % Parte Lineal DESCARGA
@@ -156,11 +158,11 @@ for i=lim(3):lim(4)
 elseif caso == 2
     V_modelo(i-lim(3)+1) = V_exp1(Params_exp1,2.5,phi(i));  % Parte Exponencial Mala DESCARGA
 elseif caso == 3
-   V_modelo(i-lim(3)+1) = V_exp2(Params_exp2,2.5,phi(i),phi2(i));   % Parte Exponencial  Buena DESCARGA
+   V_modelo(i-lim(3)+1) = V_exp2(Params_exp2,2.5,phi(i),phi2_des(i));   % Parte Exponencial  Buena DESCARGA
 elseif caso == 4
-   V_modelo(i-lim(3)+1) = V_lineal_carga(Params_cargal,2.5,phi(i));
+   V_modelo(i-lim(3)+1) = V_lineal_carga(Params_cargal,2.5,phi(i),phi2_carga(i));
 elseif caso == 5                                                    % exp Completo   CARGA
-   V_modelo(i-lim(3)+1) = V_exp_carga(Params_cargaexp,2.5,phi(i));
+   V_modelo(i-lim(3)+1) = V_exp_carga(Params_cargaexp,2.5,phi(i),phi2_carga(i));
 end
 end
 plot (phi(lim(3):lim(4))/3600, V_modelo, '--k');
@@ -174,11 +176,11 @@ for i=lim(5):(lim(6))
 elseif caso == 2
    V_modelo(i-lim(5)+1) = V_exp1(Params_exp1,1.5,phi(i));
 elseif caso == 3
-    V_modelo(i-lim(5)+1) = V_exp2(Params_exp2,1.5,phi(i),phi2(i));    % Parte Exponencial
+    V_modelo(i-lim(5)+1) = V_exp2(Params_exp2,1.5,phi(i),phi2_des(i));    % Parte Exponencial
 elseif caso == 4
-    V_modelo(i-lim(5)+1) = V_lineal_carga(Params_cargal,1.5,phi(i));
+    V_modelo(i-lim(5)+1) = V_lineal_carga(Params_cargal,1.5,phi(i),phi2_carga(i));
 elseif caso == 5
-    V_modelo(i-lim(5)+1) = V_exp_carga(Params_cargaexp,1.5,phi(i)); %TBD
+    V_modelo(i-lim(5)+1) = V_exp_carga(Params_cargaexp,1.5,phi(i),phi2_carga(i)); %TBD
 end
 end
 plot (phi(lim(5):lim(6))/3600, V_modelo, '--k');
@@ -208,7 +210,8 @@ hold off
 function error = RMSE_V(u, V_exp, I, phi)
 global n_dat; global pesos; global limites;
 global caso
-global phi2
+global phi2_des
+global phi2_carga
 V_modelo = zeros (1,sum(limites));
 for i = 1:size(phi,1)
 	if i <= limites(1)
@@ -225,11 +228,11 @@ for i = 1:size(phi,1)
     elseif caso == 2
     V_modelo(i) = V_exp1(u, I(i), phi(i));
     elseif  caso == 3
-    V_modelo(i) = V_exp2(u, I(i), phi(i),phi2(i));
+    V_modelo(i) = V_exp2(u, I(i), phi(i),phi2_des(i));
     elseif caso == 4
-    V_modelo(i) = V_lineal_carga(u, I(i), phi(i));
+    V_modelo(i) = V_lineal_carga(u, I(i), phi(i),phi2_carga(i));
     elseif caso == 5
-    V_modelo(i) = V_exp_carga(u, I(i), phi(i));
+    V_modelo(i) = V_exp_carga(u, I(i), phi(i),phi2_carga(i));
     end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	if i == limites(1)
@@ -268,26 +271,28 @@ E_d = u(2) + u(3)*phi + u(4)*exp(u(5)*phi);
 V_exp1 = E_d - u(1)*I;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function V_exp2 = V_exp2(u, I, phi, phi2)
+function V_exp2 = V_exp2(u, I, phi, phi2_des)
 global Vt
 %R_d = u(1); E_d0 = u(2); E_d1 = u(3); E_d2_0=u(4); E_d2_1=u(5); E_d2_2=u(6); E_d3_0=u(7); E_d3_1=u(8);
-phi = phi + phi2 * u(1);
+phi = phi + phi2_des * u(1);
 E_d = u(2) + u(3)*phi + (u(4) + u(5)*I + u(6)*I^2)*exp((u(7) + u(8)*I)*phi);
 V_exp2 = E_d - u(1)*I;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function V_lineal_carga = V_lineal_carga(u, I, phi)
+function V_lineal_carga = V_lineal_carga(u, I, phi, phi2_carga)
 global Vt
 %R_c = u(1); E_c0 = u(2); E_c1 = u(3);
+phi = phi - phi2_carga * u(1);
 E_c = u(2) + u(3)*phi;
-V_lineal_carga = E_c - u(1)*I;
+V_lineal_carga = E_c + u(1)*I;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function V_exp_carga = V_exp_carga(u, I, phi)
+function V_exp_carga = V_exp_carga(u, I, phi, phi2_carga)
 global Vt
 %R_c = u(1); E_c0 = u(2); E_c1 = u(3); E_c2_0=u(4); E_c3_1=u(5); E_3_2=u(6);
-E_c = u(2) + u(3)*phi+u(4)*exp((u(5)+u(6)*I)*phi);
-V_exp_carga = E_c - u(1)*I;
+phi = phi - phi2_carga * u(1);
+E_c = u(2) - u(3)*phi-u(4)*exp((u(5)+u(6)*I)*phi);
+V_exp_carga = E_c + u(1)*I;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
