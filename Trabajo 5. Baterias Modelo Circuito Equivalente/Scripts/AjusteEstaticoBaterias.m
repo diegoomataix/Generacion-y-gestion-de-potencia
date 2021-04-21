@@ -1,22 +1,18 @@
 clc; close all; clear all;
 
 %% CARGAR DATOS
-% {Tiempo , Intensidad , Voltaje} (en columnas)
 load('descarga5A'); load('carga5A');
 load('descarga2_5A'); load('carga2_5A');
 load('descarga1_5A');load('carga1_5A');
 
 global limites; global pesos; global n_dat; global caso;
-global phi2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DESCARGA [1: lineal   % 2: exp. 1era aprox.   % 3: exp. completo ]
 % CARGA    [4: lineal   % 5: exp. completo]
-caso = 3;
+caso = 5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-modelo = 1;        % 1: descarga       % 2: carga
+modelo = 2;        % 1: carga        % 2: descarga
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% PROCESAR DATOS
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% APARTADO 1
@@ -49,8 +45,6 @@ t_vect = [descarga5A(:, 1); descarga2_5A(:, 1); descarga1_5A(:, 1)];
 I = [descarga5A(:, 2); descarga2_5A(:, 2); descarga1_5A(:, 2)];
 V_exp = [descarga5A(:, 3); descarga2_5A(:, 3); descarga1_5A(:, 3)];
 phi = [descarga5A(:,4);descarga2_5A(:,4);descarga1_5A(:,4)];
-phi2 = [descarga5A(:,5);descarga2_5A(:,5);descarga1_5A(:,5)];
-
 
 pesos = [17.1816, 8.5446, 1];
 limites = [size(descarga5A,1), size(descarga2_5A,1), size(descarga1_5A,1)];
@@ -131,7 +125,8 @@ lim = [1, limites(1), limites(1)+1, limites(1)+limites(2), limites(1)+limites(2)
 %phi_mat = [phi(lim(1):lim(2)), phi(lim(3):lim(4)), phi(lim(5):lim(6))];
 
 figure()
-hold on;grid on;box on
+hold on; grid on; box on
+
 V_modelo = zeros(limites(1), 1);
 for i=1:lim(2)
 if caso == 1
@@ -139,15 +134,14 @@ if caso == 1
 elseif caso == 2
    V_modelo(i) = V_exp1(Params_exp1,5,phi(i));             % Parte Exponencial Mala DESCARGA
 elseif caso == 3
-   V_modelo(i) = V_exp2(Params_exp2,5,phi(i),phi2(i));             % Parte Exponencial Buena  DESCARGA
+   V_modelo(i) = V_exp2(Params_exp2,5,phi(i));             % Parte Exponencial Buena  DESCARGA
 elseif caso == 4
    V_modelo(i) = V_lineal_carga(Params_cargal,5,phi(i));             % Parte Lineal CARGA
 elseif caso == 5                                                % exp Completo   CARGA
     V_modelo(i) = V_exp_carga(Params_cargaexp,5,phi(i));     %TBD
 end
 end
-plot (phi(lim(1):lim(2))/3600, V_modelo, '--k');                    % Parte Lineal DESCARGA
-
+plot (phi(lim(1):lim(2)), V_modelo, '--k');                    % Parte Lineal DESCARGA
 
 V_modelo = zeros(limites(2), 1);
 for i=lim(3):lim(4)
@@ -156,16 +150,14 @@ for i=lim(3):lim(4)
 elseif caso == 2
     V_modelo(i-lim(3)+1) = V_exp1(Params_exp1,2.5,phi(i));  % Parte Exponencial Mala DESCARGA
 elseif caso == 3
-   V_modelo(i-lim(3)+1) = V_exp2(Params_exp2,2.5,phi(i),phi2(i));   % Parte Exponencial  Buena DESCARGA
+   V_modelo(i-lim(3)+1) = V_exp2(Params_exp2,2.5,phi(i));   % Parte Exponencial  Buena DESCARGA
 elseif caso == 4
    V_modelo(i-lim(3)+1) = V_lineal_carga(Params_cargal,2.5,phi(i));
 elseif caso == 5                                                    % exp Completo   CARGA
    V_modelo(i-lim(3)+1) = V_exp_carga(Params_cargaexp,2.5,phi(i));
 end
 end
-plot (phi(lim(3):lim(4))/3600, V_modelo, '--k');
-
-
+plot (phi(lim(3):lim(4)), V_modelo, '--k');
 
 V_modelo = zeros(limites(3), 1);
 for i=lim(5):(lim(6))
@@ -174,31 +166,29 @@ for i=lim(5):(lim(6))
 elseif caso == 2
    V_modelo(i-lim(5)+1) = V_exp1(Params_exp1,1.5,phi(i));
 elseif caso == 3
-    V_modelo(i-lim(5)+1) = V_exp2(Params_exp2,1.5,phi(i),phi2(i));    % Parte Exponencial
+    V_modelo(i-lim(5)+1) = V_exp2(Params_exp2,1.5,phi(i));    % Parte Exponencial
 elseif caso == 4
     V_modelo(i-lim(5)+1) = V_lineal_carga(Params_cargal,1.5,phi(i));
 elseif caso == 5
     V_modelo(i-lim(5)+1) = V_exp_carga(Params_cargaexp,1.5,phi(i)); %TBD
 end
 end
-plot (phi(lim(5):lim(6))/3600, V_modelo, '--k');
-
+plot (phi(lim(5):lim(6)), V_modelo, '--k');
 
 if modelo == 1
     % Curvas Experimentales DESCARGA
-plot (phi(1:limites(1))/3600,V_exp(1:limites(1)),'k');
-plot (phi(limites(1)+1:limites(1)+limites(2))/3600,V_exp( limites(1)+1:limites(1)+limites(2)),'k');
-plot (phi(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3))/3600,V_exp(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3)),'k');
+plot (phi(1:limites(1)),V_exp(1:limites(1)),'k');
+plot (phi(limites(1)+1:limites(1)+limites(2)),V_exp( limites(1)+1:limites(1)+limites(2)),'k');
+plot (phi(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3)),V_exp(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3)),'k');
 elseif modelo == 2
     % Curvas experimentales de CARGA
-plot (phi(1:limites(1))/3600,V_exp(1:limites(1)),'k');
-plot (phi(limites(1)+1:limites(1)+limites(2))/3600,V_exp( limites(1)+1:limites(1)+limites(2)),'k');
-plot (phi(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3))/3600,V_exp(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3)),'k');
+plot (phi(1:limites(1)),V_exp(1:limites(1)),'k');
+plot (phi(limites(1)+1:limites(1)+limites(2)),V_exp( limites(1)+1:limites(1)+limites(2)),'k');
+plot (phi(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3)),V_exp(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3)),'k');
 end
-ylabel('{\it V} [V]')
-xlabel('{\it \phi} [W·h]');
-%legend({'Aproximación numérica','Datos experimentales'},'Location','northeast','NumColumns',1)
-axis([0 12e5/3600 15 25])
+
+ylabel('{\it V} [V]'); xlabel('{\it \phi} [W·s]'); axis([0 12e5 15 25])
+% legend({'Aproximación numérica','Datos experimentales'},'Location','northeast','NumColumns',1)
 set(gca,'FontSize',18)
 hold off
 
@@ -208,7 +198,6 @@ hold off
 function error = RMSE_V(u, V_exp, I, phi)
 global n_dat; global pesos; global limites;
 global caso
-global phi2
 V_modelo = zeros (1,sum(limites));
 for i = 1:size(phi,1)
 	if i <= limites(1)
@@ -225,7 +214,7 @@ for i = 1:size(phi,1)
     elseif caso == 2
     V_modelo(i) = V_exp1(u, I(i), phi(i));
     elseif  caso == 3
-    V_modelo(i) = V_exp2(u, I(i), phi(i),phi2(i));
+    V_modelo(i) = V_exp2(u, I(i), phi(i));
     elseif caso == 4
     V_modelo(i) = V_lineal_carga(u, I(i), phi(i));
     elseif caso == 5
@@ -268,10 +257,9 @@ E_d = u(2) + u(3)*phi + u(4)*exp(u(5)*phi);
 V_exp1 = E_d - u(1)*I;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function V_exp2 = V_exp2(u, I, phi, phi2)
+function V_exp2 = V_exp2(u, I, phi)
 global Vt
 %R_d = u(1); E_d0 = u(2); E_d1 = u(3); E_d2_0=u(4); E_d2_1=u(5); E_d2_2=u(6); E_d3_0=u(7); E_d3_1=u(8);
-phi = phi + phi2 * u(1);
 E_d = u(2) + u(3)*phi + (u(4) + u(5)*I + u(6)*I^2)*exp((u(7) + u(8)*I)*phi);
 V_exp2 = E_d - u(1)*I;
 end
@@ -290,92 +278,3 @@ E_c = u(2) + u(3)*phi+u(4)*exp((u(5)+u(6)*I)*phi);
 V_exp_carga = E_c - u(1)*I;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% BACKUP
-% Ley de Peukert
-%I = 1.5;                                         % [A]
-%C_espec = 2.750*3600*[1, 0.97, 0.95, 0.92];      % [A·s]
-%I_espec = [0.55, 2.75, 5.5, 8,25]
-% K = -(log(t)-log(C))/log(I);        % Constante de Peukert
-%alpha_espec = log(C_espec(4)/C_espec(1))/log(I_espec(4)/I_espec(1))
-%k_espec = (2*alpha_espec+1)/(1+alpha_espec)
-
-
-%C_test = [100, 1000, 3000] % Capacidades para sacar la primera Rd [A·s]
-
-%for i = 1:3
-%t(i, :) = (round(C_test(:)./I(i)))
-%end
-%t = round(t./5)
-%t = t.*5
-
-%ind5 = find(descarga5A(:, 1)==t(1, 1))
-%ind25 = find(descarga2_5A(:, 1)==t(1, 1))
-
-%R_d_test1 = (descarga5A(ind5,3)-descarga2_5A(ind25, 3))./(descarga5A(ind5,2)-descarga2_5A(ind25, 2))
-%R_d_test2 = (descarga5A(t(3, :),3)-descarga1_5A(t(2, :), 3))./(descarga5A(t(3, :),2)-descarga1_5A(t(2, :), 2))
-
-%Capacidad
-% descarga5A(:,5) = descarga5A(:,1).*descarga5A(:,2);
-% carga5A(:,5) = carga5A(:,1).*carga5A(:,2);
-% descarga2_5A(:,5) = descarga2_5A(:,1).*descarga2_5A(:,2);
-% carga2_5A(:,5) = carga2_5A(:,1).*carga2_5A(:,2);
-% descarga1_5A(:,5) = descarga1_5A(:,1).*descarga1_5A(:,2);
-% carga1_5A(:,5) = carga1_5A(:,1).*carga1_5A(:,2);
-
-% {Tiempo , Intensidad , Voltaje} (en columnas)
-% [descarga5A,~,~]=(xlsread('ensayos_bateria.xlsx','descarga 5A'));
-% [carga5A,~,~]=(xlsread('ensayos_bateria.xlsx','carga 5A'));
-% [descarga2_5A,~,~]=(xlsread('ensayos_bateria.xlsx','descarga 2.5A'));
-% [carga2_5A,~,~]=(xlsread('ensayos_bateria.xlsx','carga 2.5A'));
-% [descarga1_5A,~,~]=(xlsread('ensayos_bateria.xlsx','descarga 1.5A'));
-% [carga1_5A,~,~]=(xlsread('ensayos_bateria.xlsx','carga 1.5A'));
-
-%test sin mover
-% U_lin = [0.129898838224734,24.3041841517924,-3.99223729243347e-06];
-% U01 = [-1e-17, 3.35e-5];
-% [umin_exp1,fval_exp1]=fminsearch(@(u1) RMSE_exp1(u1, U_lin,  V_exp, I, phi), U01);
-
-% Params_exp1 = [U_lin,umin_exp1]
-% RMSE2 = fval_exp1
-
-% function error = RMSE_exp1(u, V_exp, I, phi)
-% global n_dat; global pesos; global limites;
-% %V_modelo = zeros (1,sum(limites));
-% for i = 1:size(phi,1)
-% 	if i <= limites(1)
-% 		j = 1;
-% 	elseif i <= limites(2) + limites(1)
-% 		j = 2;
-% 	else
-% 		j = 3;
-% 	end
-% 	V_modelo(i) = V_exp1(u, I(i), phi(i));
-% 	if i == limites(1)
-% 		V_mod_err = V_modelo(1:limites(1));
-% 		V_exp_err = V_exp(1:limites(1));
-% 		error_vect(j) = ((sum (( V_mod_err' - V_exp_err).^2 ) / n_dat(j))^0.5);
-%
-% 	elseif i == limites(1) + limites(2)
-% 		V_mod_err = V_modelo( limites(1)+1:limites(1)+limites(2));
-% 		V_exp_err = V_exp( limites(1)+1:limites(1)+limites(2));
-% 		error_vect(j) = ((sum (( V_mod_err' - V_exp_err).^2 ) / n_dat(j))^0.5);
-%
-% 	elseif  i == sum(limites)
-% 		V_mod_err = V_modelo(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3));
-% 		V_exp_err = V_exp(limites(1)+limites(2)+1:limites(1)+limites(2)+limites(3));
-% 		error_vect(j) = (sum((V_mod_err' - V_exp_err).^2)/n_dat(j))^0.5;
-%      else
-% 	end
-%
-% end
-%
-% error = error_vect(1) + error_vect(2)+ error_vect(3);
-% end
-% [descarga5A,~,~]=(xlsread('ensayos_bateria.xlsx','descarga 5A'));
-% [carga5A,~,~]=(xlsread('ensayos_bateria.xlsx','carga 5A'));
-% [descarga2_5A,~,~]=(xlsread('ensayos_bateria.xlsx','descarga 2.5A'));
-% [carga2_5A,~,~]=(xlsread('ensayos_bateria.xlsx','carga 2.5A'));
-% [descarga1_5A,~,~]=(xlsread('ensayos_bateria.xlsx','descarga 1.5A'));
-% [carga1_5A,~,~]=(xlsread('ensayos_bateria.xlsx','carga 1.5A'));
