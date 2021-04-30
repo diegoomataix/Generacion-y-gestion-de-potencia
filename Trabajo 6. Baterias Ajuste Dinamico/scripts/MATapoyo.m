@@ -11,6 +11,7 @@ clc;close all;clear all
 %phi2 = xlsread('medidas_bateria.xlsx',1,'E2:E7213');
 
 load('I_D') ; load('V_D') ; load('t_D') ; load('phi'); load('phi2');
+
 % MODELO ANALITICO
 
 I_1 = I_D(1:1774);
@@ -121,12 +122,15 @@ hold off
 
 %% VALORES PARA SIMULINK
 
-Rint = 0.1355;
-Rcd  = 0.044;
+Rint = 0.1315; %Rd 
+Rcd  = 0.0875; %Rc
 R1   = 0.01;
 R2   = 0.01;
 C1   = 1000;
 C2   = 1000;
+I_D = - I_D;
+
+plot(I_D)
 
 
 %% BACKUP
