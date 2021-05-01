@@ -122,12 +122,7 @@ hold off
 
 %% VALORES PARA SIMULINK
 
-I_D = - I_D;
-
-E_D = E_d0 + E_d1.*phi_d + (E_d2_0 + E_d2_1.*I_D + E_d2_2.*I_D.^2).*exp((E_d3_0 + E_d3_1.*I_D).*phi_d);
-E_C = E_c0 - E_c1.*phi_c - E_c2_0.*exp((E_c3_1+E_c3_2.*I_D).*phi_c);
-
-E_CD = E_C - E_D;
+E(i)= E_d0 + E_d1*phi_d(i) + (E_d2_0 + E_d2_1*abs(I_D(i)) + E_d2_2*I_D(i)^2)*exp((E_d3_0 + E_d3_1*abs(I_D(i)))*phi_d(i));
 
 Rint = 0.1315; %Rd 
 Rcd  = 0.0875; %Rc
@@ -135,17 +130,9 @@ R1   = 0.01;
 R2   = 0.01;
 C1   = 1000;
 C2   = 1000;
+I_D = - I_D;
 
-figure()
-box on
-grid on
-hold on
-plot(t_D,E_C)
-plot(t_D,E)
-xlabel('{\it t} [s]')
-ylabel('{\it V} [V]')
-hold off
-
+% plot(I_D)
 
 
 %% BACKUP
