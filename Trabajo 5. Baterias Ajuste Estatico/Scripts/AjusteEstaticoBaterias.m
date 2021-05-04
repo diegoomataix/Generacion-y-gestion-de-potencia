@@ -6,14 +6,21 @@ load('descarga5A'); load('carga5A');
 load('descarga2_5A'); load('carga2_5A');
 load('descarga1_5A');load('carga1_5A');
 
+ [descarga5A,~,~]=(xlsread('ensayos_bateria_1.xlsx','descarga 5A'));
+% [carga5A,~,~]=(xlsread('ensayos_bateria.xlsx','carga 5A'));
+ [descarga2_5A,~,~]=(xlsread('ensayos_bateria_1.xlsx','descarga 2.5A'));
+% [carga2_5A,~,~]=(xlsread('ensayos_bateria.xlsx','carga 2.5A'));
+ [descarga1_5A,~,~]=(xlsread('ensayos_bateria_1.xlsx','descarga 1.5A'));
+% [carga1_5A,~,~]=(xlsread('ensayos_bateria.xlsx','carga 1.5A'));
+
 global limites; global pesos; global n_dat; global caso;
 global phi2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DESCARGA [1: lineal   % 2: exp. 1era aprox.   % 3: exp. completo ]
 % CARGA    [4: lineal   % 5: exp. completo]
-caso = 4;
+caso = 3;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-modelo = 2;        % 1: descarga       % 2: carga
+modelo = 1;        % 1: descarga       % 2: carga
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% PROCESAR DATOS
