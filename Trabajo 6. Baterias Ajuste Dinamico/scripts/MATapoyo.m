@@ -15,14 +15,14 @@ load('I_D') ; load('V_D') ; load('t_D') ; load('phi'); load('phi2');
 % MODELO ANALITICO
 
 I_1 = I_D(1:1775);
-I_2 = I_D(1776:3550);
+I_2 = I_D(1776:3535);
 I_3 = I_D(3551:4734);
 I_4 = I_D(4735:5326);
 I_5 = I_D(5327:6509);
 I_6 = I_D(6510:end);
 
 V_1 = V_D(1:1775);
-V_2 = V_D(1776:3550);
+V_2 = V_D(1776:3535);
 V_2 = - V_2 + 2*max(V_2);
 V_3 = V_D(3551:4734);
 V_4 = V_D(4735:5326);
@@ -31,7 +31,7 @@ V_5 = - V_5 + 2*max(V_5);
 V_6 = V_D(6510:end);
 
 t_1 = t_D(1:1775);
-t_2 = t_D(1776:3550) - t_1(end);
+t_2 = t_D(1776:3535) - t_1(end);
 t_3 = t_D(3551:4734) - t_1(end) - t_2(end);
 t_4 = t_D(4735:5326) - t_1(end) - t_2(end) - t_3(end) ;
 t_5 = t_D(5327:6509) - t_4(end) -  t_3(end) - t_2(end)  - t_1(end);
@@ -51,6 +51,13 @@ V_4 = V_4 - V4_rect;
 V_5 = V_5 - V5_rect;
 V_6 = V_6 - V6_rect;
 
+V_1 = smooth(V_1,180);
+V_2 = smooth(V_2,180);
+V_3 = smooth(V_3,180);
+V_4 = smooth(V_4,180);
+V_5 = smooth(V_5,180);
+V_6 = smooth(V_6,180);
+
 Dv_Di_2 = V_2./abs(I_1(300)-I_2(300));
 Dv_Di_3 = V_3./abs(I_2(300)-I_3(300));
 Dv_Di_4 = V_4./abs(I_3(300)-I_4(300));
@@ -63,6 +70,8 @@ R34 = Dv_Di_4(1);
 R45 = Dv_Di_5(1);
 R56 = Dv_Di_6(1);
 
+R_1 = (R12 + R34 + R45 + R56) /4 ;
+
 [a,Pos2] = min(abs(Dv_Di_2-0.368*max(Dv_Di_2)));
 [b,Pos3] = min(abs(Dv_Di_3-0.368*max(Dv_Di_3)));
 [c,Pos4] = min(abs(Dv_Di_4-0.368*max(Dv_Di_4)));
@@ -70,68 +79,145 @@ R56 = Dv_Di_6(1);
 [e,Pos6] = min(abs(Dv_Di_6-0.368*max(Dv_Di_6)));
 
 C12 = t_2(Pos2)/R12;
-C13 = t_3(Pos3)/R23;
-C14 = t_4(Pos4)/R34;
-C15 = t_5(Pos5)/R45;
-C16 = t_6(Pos6)/R56;
+C23 = t_3(Pos3)/R23;
+C34 = t_4(Pos4)/R34;
+C45 = t_5(Pos5)/R45;
+C56 = t_6(Pos6)/R56;
 
+C_1 = (C12 + C34 + C45 + C56) /4 ;
+
+deltaVdeltaI_12 = R12*exp(-(t_2./(R12*C12)));
+deltaVdeltaI_23 = R23*exp(-(t_3./(R23*C23)));
+deltaVdeltaI_34 = R34*exp(-(t_4./(R34*C34)));
+deltaVdeltaI_45 = R45*exp(-(t_5./(R45*C45)));
+deltaVdeltaI_56 = R56*exp(-(t_6./(R56*C56)));
+
+%Modelo 2
+
+K12 = -1-log((1/R12)*Dv_Di_2(Pos2));
+K23 = -1-log((1/R23)*Dv_Di_3(Pos3));
+K34 = -1-log((1/R34)*Dv_Di_4(Pos4));
+K45 = -1-log((1/R45)*Dv_Di_5(Pos5));
+K56 = -1-log((1/R56)*Dv_Di_6(Pos6));
+
+deltaVdeltaI_12_exp = R12*exp(-(t_2./(R12*C12))+K12.*(t_2/(C12*R12)));
+deltaVdeltaI_23_exp = R23*exp(-(t_3./(R23*C23))+K23.*(t_3/(C23*R23)));
+deltaVdeltaI_34_exp = R34*exp(-(t_4./(R34*C34))+K34.*(t_4/(C34*R34)));
+deltaVdeltaI_45_exp = R45*exp(-(t_5./(R45*C45))+K45.*(t_5/(C45*R45)));
+deltaVdeltaI_56_exp = R56*exp(-(t_6./(R56*C56))+K56.*(t_6/(C56*R56)));
+
+%plot_fun(axisx,axisy,labelx,labely,yourtitle)
+figure()
+box on
+grid on
+hold on
+plot(t_2,deltaVdeltaI_12,'k','LineWidth',1.2)
+plot(t_2,deltaVdeltaI_12_exp,'--k','LineWidth',1.2)
+plot(t_2, Dv_Di_2, '--ok','MarkerIndices',1:100:length(Dv_Di_2),'LineWidth',1.2)
+xlabel('{\it t} [s]')
+ylabel('{\it \Delta V/ \Delta I} [V/A]')
+hold off
+
+figure()
+box on
+grid on
+hold on
+plot(t_3,deltaVdeltaI_23,'k','LineWidth',1.2)
+plot(t_3,deltaVdeltaI_23_exp,'--k','LineWidth',1.2)
+plot(t_3, Dv_Di_3,'--ok','MarkerIndices',1:100:length(Dv_Di_3),'LineWidth',1.2)
+xlabel('{\it t} [s]')
+ylabel('{\it \Delta V/ \Delta I} [V/A]')
+hold off
+
+figure()
+box on
+grid on
+hold on
+plot(t_4,deltaVdeltaI_34,'k','LineWidth',1.2)
+plot(t_4,deltaVdeltaI_34_exp,'--k','LineWidth',1.2)
+plot(t_4, Dv_Di_4,'--ok','MarkerIndices',1:100:length(Dv_Di_4),'LineWidth',1.2)
+xlabel('{\it t} [s]')
+ylabel('{\it \Delta V/ \Delta I} [V/A]')
+hold off
+
+figure()
+box on
+grid on
+hold on
+plot(t_5,deltaVdeltaI_45,'k','LineWidth',1.2)
+plot(t_5,deltaVdeltaI_45_exp,'--k','LineWidth',1.2)
+plot(t_5, Dv_Di_5,'--ok','MarkerIndices',1:100:length(Dv_Di_5),'LineWidth',1.2)
+xlabel('{\it t} [s]')
+ylabel('{\it \Delta V/ \Delta I} [V/A]')
+hold off
+
+figure()
+box on
+grid on
+hold on
+plot(t_6,deltaVdeltaI_56,'k','LineWidth',1.2)
+plot(t_6,deltaVdeltaI_56_exp,'--k','LineWidth',1.2)
+plot(t_6, Dv_Di_6, 'ok','MarkerIndices',1:5:length(Dv_Di_6),'LineWidth',1.2)
+xlabel('{\it t} [s]')
+ylabel('{\it \Delta V/ \Delta I} [V/A]')
+hold off
 
 
 %% APARTADO NUESTRO
-stop
-V1_rect = -0.00048441.*t_1 + 23.97875522;
-V2_rect = 0.0000701410.*t_2 + 23.6394221899;
-V3_rect = -0.00003619.*t_3 + 23.92519957;
-V4_rect = -0.000461*t_4 + 25.384720;
-V5_rect = 0.0000879957.*t_5 + 23.1738203106;
-V6_rect = -0.00021592.*t_6 + 24.76426337;
 
-V_1 = V_1 - V1_rect;
-V_2 = V_2 - V2_rect;
-V_3 = V_3 - V3_rect;
-V_4 = V_4 - V4_rect;
-V_5 = V_5 - V5_rect;
-V_6 = V_6 - V6_rect;
-
-V_1 = V_1 + abs(min(V_1));
-V_2 = abs(V_2 - max(V_2));
-V_3 = V_3 + abs(min(V_3));
-V_4 = V_4 + abs(min(V_4));
-V_5 = abs(V_5 - max(V_5));
-V_6 = V_6 + abs(min(V_6));
-
-V_1 = smooth(V_1,80);
-V_2 = smooth(V_2,80);
-V_3 = smooth(V_3,80);
-V_4 = smooth(V_4,80);
-V_5 = smooth(V_5,80);
-V_6 = smooth(V_6,80);
-
-R12 = max(V_2)/abs(I_1(300)-I_2(300));
-R13 = max(V_3)/abs(I_2(300)-I_3(300));
-R14 = max(V_4)/abs(I_3(300)-I_4(300));
-R15 = max(V_5)/abs(I_4(300)-I_5(300));
-R16 = max(V_6)/abs(I_5(300)-I_6(300));
-
-R_inc = (R12 + R13 + R14 + R15 + R16) /5 ;
-
-Dv_Di_2 = V_2./abs(I_1(300)-I_2(300));
-Dv_Di_3 = V_3./abs(I_2(300)-I_3(300));
-Dv_Di_4 = V_4./abs(I_3(300)-I_4(300));
-Dv_Di_5 = V_5./abs(I_4(300)-I_5(300));
-Dv_Di_6 = V_6./abs(I_5(300)-I_6(300));
-
-[a,Pos2] = min(abs(Dv_Di_2-0.368*max(Dv_Di_2)));
-[b,Pos3] = min(abs(Dv_Di_3-0.368*max(Dv_Di_3)));
-[c,Pos4] = min(abs(Dv_Di_4-0.368*max(Dv_Di_4)));
-[d,Pos5] = min(abs(Dv_Di_5-0.368*max(Dv_Di_5)));
-[e,Pos6] = min(abs(Dv_Di_6-0.368*max(Dv_Di_6)));
-
-C12 = t_2(Pos2)/R12;
-C13 = t_3(Pos3)/R13;
-C14 = t_4(Pos4)/R14;
-C15 = t_5(Pos5)/R15;
-C16 = t_6(Pos6)/R16;
+% V1_rect = -0.00048441.*t_1 + 23.97875522;
+% V2_rect = 0.0000701410.*t_2 + 23.6394221899;
+% V3_rect = -0.00003619.*t_3 + 23.92519957;
+% V4_rect = -0.000461*t_4 + 25.384720;
+% V5_rect = 0.0000879957.*t_5 + 23.1738203106;
+% V6_rect = -0.00021592.*t_6 + 24.76426337;
+%
+% V_1 = V_1 - V1_rect;
+% V_2 = V_2 - V2_rect;
+% V_3 = V_3 - V3_rect;
+% V_4 = V_4 - V4_rect;
+% V_5 = V_5 - V5_rect;
+% V_6 = V_6 - V6_rect;
+%
+% V_1 = V_1 + abs(min(V_1));
+% V_2 = abs(V_2 - max(V_2));
+% V_3 = V_3 + abs(min(V_3));
+% V_4 = V_4 + abs(min(V_4));
+% V_5 = abs(V_5 - max(V_5));
+% V_6 = V_6 + abs(min(V_6));
+%
+% V_1 = smooth(V_1,80);
+% V_2 = smooth(V_2,80);
+% V_3 = smooth(V_3,80);
+% V_4 = smooth(V_4,80);
+% V_5 = smooth(V_5,80);
+% V_6 = smooth(V_6,80);
+%
+% R12 = max(V_2)/abs(I_1(300)-I_2(300));
+% R13 = max(V_3)/abs(I_2(300)-I_3(300));
+% R14 = max(V_4)/abs(I_3(300)-I_4(300));
+% R15 = max(V_5)/abs(I_4(300)-I_5(300));
+% R16 = max(V_6)/abs(I_5(300)-I_6(300));
+%
+% R_inc = (R12 + R13 + R14 + R15 + R16) /5 ;
+%
+% Dv_Di_2 = V_2./abs(I_1(300)-I_2(300));
+% Dv_Di_3 = V_3./abs(I_2(300)-I_3(300));
+% Dv_Di_4 = V_4./abs(I_3(300)-I_4(300));
+% Dv_Di_5 = V_5./abs(I_4(300)-I_5(300));
+% Dv_Di_6 = V_6./abs(I_5(300)-I_6(300));
+%
+% [a,Pos2] = min(abs(Dv_Di_2-0.368*max(Dv_Di_2)));
+% [b,Pos3] = min(abs(Dv_Di_3-0.368*max(Dv_Di_3)));
+% [c,Pos4] = min(abs(Dv_Di_4-0.368*max(Dv_Di_4)));
+% [d,Pos5] = min(abs(Dv_Di_5-0.368*max(Dv_Di_5)));
+% [e,Pos6] = min(abs(Dv_Di_6-0.368*max(Dv_Di_6)));
+%
+% C12 = t_2(Pos2)/R12;
+% C13 = t_3(Pos3)/R13;
+% C14 = t_4(Pos4)/R14;
+% C15 = t_5(Pos5)/R15;
+% C16 = t_6(Pos6)/R16;
 
 %plot_fun(t_2,Dv_Di_2,'','','')
 %plot_fun(t_3,Dv_Di_3,'','','')
@@ -226,6 +312,8 @@ plot(t_D,E)
 xlabel('{\it t} [s]')
 ylabel('{\it V} [V]')
 hold off
+
+
 
 
 
