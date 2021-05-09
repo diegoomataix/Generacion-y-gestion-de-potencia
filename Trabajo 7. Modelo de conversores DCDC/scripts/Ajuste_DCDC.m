@@ -42,7 +42,9 @@ load('I1_15');load('V1_15');load('I2_15');load('V2_15');
 P1_15  = I1_15.*V1_15;
 P2_15  = I2_15.*V2_15;
 eta_15 = P2_15./P1_15;
-
+V2_15 = [15; V2_15];
+P2_15 = [0;P2_15 ];
+eta_15 = [0;eta_15];
 %% Estructuracion de datos
 % Columnas:
 limites = [size(I1_33,1), size(I1_5,1), size(I1_15,1)];
@@ -131,7 +133,7 @@ elseif dispositivo == 2
 
 elseif dispositivo == 3
 
-	U_3 = [-0.5, 0.1, 0.1];
+	U_3 = [-0.5, 0.1, 0.01];
 	[umin,fval]=fminsearch(@(u) RMSE_eta(u, eta_15, P2_15, V2_15), U_3);
 
 	Param_3_15 = umin
@@ -174,7 +176,7 @@ plot(P2_33,eta_modelo_33_c1, '--*k')
 plot(P2_33,eta_modelo_33_c2, '--*k')
 plot(P2_33,eta_modelo_33_c3, '--dk')
 set(gca,'FontSize',18)
-xlabel('\it {P_{out}} [W]')
+xlabel('{\it{P_{out}}} [W]')
 ylabel('\eta')
 legend('Datos experimentales', 'Ajuste 1' ,'Ajuste 2', 'Ajuste 3')
 hold off
@@ -187,7 +189,7 @@ plot(P2_5,eta_modelo_5_c1,'--*k')
 plot(P2_5,eta_modelo_5_c2, '--+k')
 plot(P2_5,eta_modelo_5_c3, '--dk')
 set(gca,'FontSize',18)
-xlabel('\it {P_{out}} [W]')
+xlabel('{\it{P_{out}}} [W]')
 ylabel('\eta')
 legend('Datos experimentales', 'Ajuste 1', 'Ajuste 2', 'Ajuste 3')
 hold off
@@ -201,7 +203,7 @@ plot(P2_15,eta_modelo_15_c1, '--*k')
 plot(P2_15,eta_modelo_15_c2,'--+k')
 plot(P2_15,eta_modelo_15_c3, '--dk')
 set(gca,'FontSize',18)
-xlabel('\it {P_{out}} [W]')
+xlabel('{\it{P_{out}}} [W]')
 ylabel('\eta')
 legend('Datos experimentales', 'Ajuste 1', 'Ajuste 2', 'Ajuste 3' )
 hold off
@@ -211,17 +213,17 @@ hold off
 %Funciones
 
 function eta_ajust_1 = DCDC(u, V2, P2, eta_max)
-f  = u(1).*(P2./V2);
+f  = u(1).*P2;
 eta_ajust_1 = eta_max*(1-exp(f));
 end
 
 function eta_ajust_2 = DCDC2(u, V2, P2, eta_max)
-f = u(1).*(P2./V2) + u(2).*(P2./V2).^2;
+f = u(1).*P2 + u(2).*P2.^2;
 eta_ajust_2 = eta_max*(1-exp(f));
 end
 
 function eta_ajust_3 = DCDC3(u, V2, P2, eta_max)
-f = (u(1)./V2).*P2 + u(2).*(P2./V2).^2 + u(3).*(P2./V2).^3;
+f = u(1).*P2 + u(2).*P2.^2 + u(3).*P2.^3;
 eta_ajust_3 = eta_max*(1-exp(f));
 end
 
