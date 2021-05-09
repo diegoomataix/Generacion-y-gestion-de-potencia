@@ -10,7 +10,8 @@ clc;close all;clear all
 %phi  = xlsread('medidas_bateria.xlsx',1,'D2:D7213');
 %phi2 = xlsread('medidas_bateria.xlsx',1,'E2:E7213');
 
-load('I_D') ; load('V_D') ; load('t_D') ; load('phi'); load('phi2');
+load('I_D') ; load('V_D') ; load('t_D') ; load('phi'); load('phi2'); 
+load('resultados_modelo_1C1R');load('resultados_modelo_2c2r');load('V_analitico');
 
 % MODELO ANALITICO
 
@@ -127,8 +128,10 @@ hold on
 plot(t_2,deltaVdeltaI_12,'k','LineWidth',1.2)
 plot(t_2,deltaVdeltaI_12_exp,'--k','LineWidth',1.2)
 plot(t_2, Dv_Di_2, '--ok','MarkerIndices',1:100:length(Dv_Di_2),'LineWidth',1.2)
+set(gca,'FontSize',18)
 xlabel('{\it t} [s]')
 ylabel('{\it \Delta V/ \Delta I} [V/A]')
+legend('Ajuste 1','Ajuste 2','Datos experimentales filtrados - 2º Tramo')
 hold off
 
 figure()
@@ -138,8 +141,10 @@ hold on
 plot(t_3,deltaVdeltaI_23,'k','LineWidth',1.2)
 plot(t_3,deltaVdeltaI_23_exp,'--k','LineWidth',1.2)
 plot(t_3, Dv_Di_3,'--ok','MarkerIndices',1:100:length(Dv_Di_3),'LineWidth',1.2)
+set(gca,'FontSize',18)
 xlabel('{\it t} [s]')
 ylabel('{\it \Delta V/ \Delta I} [V/A]')
+legend('Ajuste 1','Ajuste 2','Datos experimentales filtrados - 3^{er} Tramo')
 hold off
 
 figure()
@@ -149,8 +154,10 @@ hold on
 plot(t_4,deltaVdeltaI_34,'k','LineWidth',1.2)
 plot(t_4,deltaVdeltaI_34_exp,'--k','LineWidth',1.2)
 plot(t_4, Dv_Di_4,'--ok','MarkerIndices',1:100:length(Dv_Di_4),'LineWidth',1.2)
+set(gca,'FontSize',18)
 xlabel('{\it t} [s]')
 ylabel('{\it \Delta V/ \Delta I} [V/A]')
+legend('Ajuste 1','Ajuste 2','Datos experimentales filtrados - 4º Tramo')
 hold off
 
 figure()
@@ -160,8 +167,10 @@ hold on
 plot(t_5,deltaVdeltaI_45,'k','LineWidth',1.2)
 plot(t_5,deltaVdeltaI_45_exp,'--k','LineWidth',1.2)
 plot(t_5, Dv_Di_5,'--ok','MarkerIndices',1:100:length(Dv_Di_5),'LineWidth',1.2)
+set(gca,'FontSize',18)
 xlabel('{\it t} [s]')
 ylabel('{\it \Delta V/ \Delta I} [V/A]')
+legend('Ajuste 1','Ajuste 2','Datos experimentales filtrados - 5º Tramo')
 hold off
 
 figure()
@@ -170,23 +179,47 @@ grid on
 hold on
 plot(t_6,deltaVdeltaI_56,'k','LineWidth',1.2)
 plot(t_6,deltaVdeltaI_56_exp,'--k','LineWidth',1.2)
-plot(t_6, Dv_Di_6, 'ok','MarkerIndices',1:5:length(Dv_Di_6),'LineWidth',1.2)
+plot(t_6, Dv_Di_6, '--ok','MarkerIndices',1:100:length(Dv_Di_6),'LineWidth',1.2)
+set(gca,'FontSize',18)
 xlabel('{\it t} [s]')
 ylabel('{\it \Delta V/ \Delta I} [V/A]')
+legend('Ajuste 1','Ajuste 2','Datos experimentales filtrados - 6º Tramo')
 hold off
 
-load('resultados_modelo_1C1R')
-load('resultados_modelo_2c2r')
+figure()
+box on
+grid on
+hold on
+plot(t_D,V_D,'k','LineWidth',1.2)
+plot(V_analitico, 'd--k', 'MarkerIndices',1:120:7210, 'LineWidth',1.2)
+xlabel('{\it t} [s]')
+ylabel('{\it V} [V]')
+legend('Datos experimentales' , 'Modelo 1RC analítico')
+set(gca,'FontSize',18)
+hold off
+
+
 figure()
 box on
 grid on
 hold on
 plot(t_D,V_D,'k','LineWidth',1.2)
 plot(Resultados_Modelo_1C1R,'d--k','MarkerIndices',1:120:7210, 'LineWidth',1.2)
-%plot(Modelo_2c2r, 'd--k', 'MarkerIndices',1:120:7210, 'LineWidth',1.2)
 xlabel('{\it t} [s]')
 ylabel('{\it V} [V]')
 legend('Datos experimentales' , 'Modelo 1RC')
+set(gca,'FontSize',18)
+hold off
+
+figure()
+box on
+grid on
+hold on
+plot(t_D,V_D,'k','LineWidth',1.2)
+plot(Modelo_2c2r, 'd--k', 'MarkerIndices',1:120:7210, 'LineWidth',1.2)
+xlabel('{\it t} [s]')
+ylabel('{\it V} [V]')
+legend('Datos experimentales' , 'Modelo 2RC')
 set(gca,'FontSize',18)
 hold off
 
@@ -245,10 +278,12 @@ figure()
 box on
 grid on
 hold on
-plot(t_D,V)
-plot(t_D,V_D)
+plot(t_D,V,'--k','LineWidth',1.2)
+plot(t_D,V_D,'k','LineWidth',1.2)
 xlabel('{\it t} [s]')
 ylabel('{\it V} [V]')
+legend('Ajuste estático' , 'Datos experimentales')
+set(gca,'FontSize',18)
 hold off
 
 %% VALORES PARA SIMULINK
