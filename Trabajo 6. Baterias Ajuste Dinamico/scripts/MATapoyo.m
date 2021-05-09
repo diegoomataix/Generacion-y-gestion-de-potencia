@@ -175,6 +175,21 @@ xlabel('{\it t} [s]')
 ylabel('{\it \Delta V/ \Delta I} [V/A]')
 hold off
 
+load('resultados_modelo_1C1R')
+load('resultados_modelo_2c2r')
+figure()
+box on
+grid on
+hold on
+plot(t_D,V_D,'k','LineWidth',1.2)
+plot(Resultados_Modelo_1C1R,'d--k','MarkerIndices',1:120:7210, 'LineWidth',1.2)
+%plot(Modelo_2c2r, 'd--k', 'MarkerIndices',1:120:7210, 'LineWidth',1.2)
+xlabel('{\it t} [s]')
+ylabel('{\it V} [V]')
+legend('Datos experimentales' , 'Modelo 1RC')
+set(gca,'FontSize',18)
+hold off
+
 %% MODELO SIMULINK
 
 % Descarga
