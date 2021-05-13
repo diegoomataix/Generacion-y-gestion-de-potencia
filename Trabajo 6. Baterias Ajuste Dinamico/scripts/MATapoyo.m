@@ -130,7 +130,8 @@ plot(t_2,deltaVdeltaI_12_exp,'--k','LineWidth',1.2)
 plot(t_2, Dv_Di_2, '--ok','MarkerIndices',1:100:length(Dv_Di_2),'LineWidth',1.2)
 set(gca,'FontSize',18)
 xlabel('{\it t} [s]')
-ylabel('{\it \Delta V/ \Delta I} [V/A]')
+%ylabel('\Delta{\it  V} /_\Delta{\it I} [V/A]')
+ylabel('$\frac{\Delta{\it  V}}{\Delta{\it I}}$ [V/A]','Interpreter','latex')
 legend('Ajuste 1','Ajuste 2','Datos experimentales filtrados - 2º Tramo')
 hold off
 
@@ -143,7 +144,8 @@ plot(t_3,deltaVdeltaI_23_exp,'--k','LineWidth',1.2)
 plot(t_3, Dv_Di_3,'--ok','MarkerIndices',1:100:length(Dv_Di_3),'LineWidth',1.2)
 set(gca,'FontSize',18)
 xlabel('{\it t} [s]')
-ylabel('{\it \Delta V/ \Delta I} [V/A]')
+% ylabel('{\it \Delta V/ \Delta I} [V/A]')
+ylabel('$\frac{\Delta{\it  V}}{\Delta{\it I}}$ [V/A]','Interpreter','latex')
 legend('Ajuste 1','Ajuste 2','Datos experimentales filtrados - 3^{er} Tramo')
 hold off
 
@@ -156,7 +158,8 @@ plot(t_4,deltaVdeltaI_34_exp,'--k','LineWidth',1.2)
 plot(t_4, Dv_Di_4,'--ok','MarkerIndices',1:100:length(Dv_Di_4),'LineWidth',1.2)
 set(gca,'FontSize',18)
 xlabel('{\it t} [s]')
-ylabel('{\it \Delta V/ \Delta I} [V/A]')
+% ylabel('{\it \Delta V/ \Delta I} [V/A]')
+ylabel('$\frac{\Delta{\it  V}}{\Delta{\it I}}$ [V/A]','Interpreter','latex')
 legend('Ajuste 1','Ajuste 2','Datos experimentales filtrados - 4º Tramo')
 hold off
 
@@ -169,7 +172,8 @@ plot(t_5,deltaVdeltaI_45_exp,'--k','LineWidth',1.2)
 plot(t_5, Dv_Di_5,'--ok','MarkerIndices',1:100:length(Dv_Di_5),'LineWidth',1.2)
 set(gca,'FontSize',18)
 xlabel('{\it t} [s]')
-ylabel('{\it \Delta V/ \Delta I} [V/A]')
+% ylabel('{\it \Delta V/ \Delta I} [V/A]')
+ylabel('$\frac{\Delta{\it  V}}{\Delta{\it I}}$ [V/A]','Interpreter','latex')
 legend('Ajuste 1','Ajuste 2','Datos experimentales filtrados - 5º Tramo')
 hold off
 
@@ -182,7 +186,8 @@ plot(t_6,deltaVdeltaI_56_exp,'--k','LineWidth',1.2)
 plot(t_6, Dv_Di_6, '--ok','MarkerIndices',1:100:length(Dv_Di_6),'LineWidth',1.2)
 set(gca,'FontSize',18)
 xlabel('{\it t} [s]')
-ylabel('{\it \Delta V/ \Delta I} [V/A]')
+% ylabel('{\it \Delta V/ \Delta I} [V/A]')
+ylabel('$\frac{\Delta{\it  V}}{\Delta{\it I}}$ [V/A]','Interpreter','latex')
 legend('Ajuste 1','Ajuste 2','Datos experimentales filtrados - 6º Tramo')
 hold off
 
